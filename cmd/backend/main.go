@@ -41,7 +41,10 @@ func main() {
 	e.Logger.SetOutput(ioutil.Discard)
 	e.Logger.SetLevel(echolog.OFF)
 
-	api.RegisterHandlers(e, svr)
+	// add a version to the api
+	g := e.Group("/v1")
+
+	api.RegisterHandlers(g, svr)
 
 	log.Info().Str("addr", cfg.Addr).Msg("starting http listener")
 	err = e.Start(cfg.Addr)

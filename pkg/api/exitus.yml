@@ -13,7 +13,7 @@ info:
     name: "CC Attribution-ShareAlike 4.0 (CC BY-SA 4.0)"
     url: "https://issues.wolfe.id.au/license"
 servers:
-  - url: https://api.issues.wolfe.id.au/1.0/
+  - url: https://api.issues.wolfe.id.au/v1
     description: Production server
 paths:
   /projects:

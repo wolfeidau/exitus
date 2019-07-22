@@ -14,8 +14,7 @@ generate:
 	go generate ./pkg/api/
 .PHONY: generate
 
-
-local:
+local: generate
 	docker-compose up
 .PHONY: local
 

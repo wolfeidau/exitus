@@ -20,8 +20,12 @@ The goal of the project is to cover a few key pillars:
 
 # Dependencies
 
-- [golangci-lint](https://github.com/golangci/golangci-lint) is used for linting.
-- [github.com/golang-migrate/migrate](https://github.com/golang-migrate/migrate) is used for migrations, the CLI can be installed using `brew install golang-migrate`.
+* [golangci-lint](https://github.com/golangci/golangci-lint) is used for linting.
+* [github.com/golang-migrate/migrate](https://github.com/golang-migrate/migrate) is used for migrations, the CLI can be installed using `brew install golang-migrate`.
+
+# References
+
+* [F1: A Distributed SQL Database That Scales](http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41344.pdf)
 
 # License
 
