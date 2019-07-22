@@ -1,0 +1,552 @@
+openapi: "3.0.2"
+info:
+  title: "Issues API"
+  description: |
+    This API enables raising, commenting and voting on issues.
+  version: "1.0"
+  termsOfService: "https://issues.wolfe.id.au/terms"
+  contact:
+    name: "Store API"
+    url: "https://issues.wolfe.id.au/api"
+    email: "mark@wolfe.id.au"
+  license:
+    name: "CC Attribution-ShareAlike 4.0 (CC BY-SA 4.0)"
+    url: "https://issues.wolfe.id.au/license"
+servers:
+  - url: https://api.issues.wolfe.id.au/1.0/
+    description: Production server
+paths:
+  /projects:
+    post:
+      summary: "Create a project."
+      operationId: NewProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProject'
+      responses:
+        '201':
+          description: project created response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    get:
+      summary: "Get a list of projects."
+      operationId: Projects
+      parameters:
+        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: projects response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectsPage'
+  /projects/{id}:
+    get:
+      description: Returns a project based on it's identifier.
+      operationId: GetProject
+      parameters:
+        - name: id
+          in: path
+          description: Identifier of project to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: project response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    put:
+      summary: "Update a project."
+      operationId: UpdateProject
+      parameters:
+        - name: id
+          in: path
+          description: Identifier of project to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatedProject'
+      responses:
+        '201':
+          description: project updated response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+  /projects/{project_id}/issues:
+    post:
+      summary: "Create a issue."
+      operationId: NewIssue
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewIssue'
+      responses:
+        '201':
+          description: issue created response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Issue'
+    get:
+      summary: "Get a list of issues."
+      operationId: Issues
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/filterIssues'
+      responses:
+        '200':
+          description: issues response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssuesPage'
+  /projects/{project_id}/issues/{id}:
+    get:
+      description: Returns a issue based on it's identifier.
+      operationId: GetIssue
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: Identifier of issue to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: issue response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Issue'
+  /projects/{project_id}/issues/{issue_id}/comments:
+    post:
+      summary: "Create a comment on a issue."
+      operationId: NewComment
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          description: Identifier of issue to attach the comment.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewComment'
+      responses:
+        '201':
+          description: comment created response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+    get:
+      summary: "Get a list of Comments."
+      operationId: Comments
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          description: Identifier of issue to list comments.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: comments response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentsPage'
+  /projects/{project_id}/issues/{issue_id}/comments/{id}:
+    get:
+      description: Returns a comment based on it's identifier.
+      operationId: GetComment
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          description: Identifier of issue to fetch
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: Identifier of comment to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: comment response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+  /users:
+    get:
+      summary: "Get a list of users."
+      operationId: Users
+      parameters:
+        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: users response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UsersPage'
+  /users/{id}:
+    get:
+      description: Returns a user based on identifier.
+      operationId: GetUser
+      parameters:
+        - name: id
+          in: path
+          description: Identifier of user to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: user response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+components:
+  parameters:
+    nextToken:
+      name: nextToken
+      in: query
+      description: Used to request the next page in the list operation.
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Used to specify the maximum number of records which are returned in the next page.
+      schema:
+        type: integer
+        format: int64
+        default: 50
+    filterIssues:
+      name: filter
+      in: query
+      style: pipeDelimited
+      explode: true
+      schema:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+  schemas:
+    NewProject:
+      required:
+        - name
+        - labels
+      properties:
+        name:
+          type: string
+          description: The name of the Project.
+          example: New Project
+        description:
+          type: string
+          description:
+            A description of the project, with some background.
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+    UpdatedProject:
+      allOf:
+        - $ref: '#/components/schemas/NewProject'
+        - required:
+          - version
+          properties:
+            version:
+              type: integer
+              format: int64
+    Project:
+      title: Project
+      type: object
+      required:
+        - id
+        - name
+        - labels
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Issue identifier.
+          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+        name:
+          type: string
+          description: The name of the Project.
+          example: New Project
+        description:
+          type: string
+          description:
+            A description of the project, with some background.
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp the Project was last updated
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp the Project was created
+    ProjectsPage:
+      title: ProjectsPage
+      type: object
+      properties:
+        nextToken:
+          type: string
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    NewIssue:
+      required:
+        - subject
+      properties:
+        subject:
+          type: string
+          description: A subject of the issue
+          example: Please fix the error
+        content:
+          type: string
+          description:
+            The content associated with the issue, any background,
+            or details required to help resolve it.
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+    Issue:
+      title: Issue
+      type: object
+      required:
+        - id
+        - author
+        - subject
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Issue identifier.
+          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+        author:
+          $ref: '#/components/schemas/User'
+        assignee:
+          $ref: '#/components/schemas/User'
+        subject:
+          type: string
+          description: A subject of the Issue.
+          example: Please fix the error
+        severity:
+          type: string
+          description: A severity of the Issue.
+          example: critical
+        category:
+          type: string
+          description: A category of the Issue.
+          example: bug
+        content:
+          type: string
+          description:
+            The content associated with the Issue, any background,
+            or details required to help resolve it.
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+        comments:
+          $ref: '#/components/schemas/CommentsPage'
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp the Issue was last updated
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp the Issue was created
+    IssuesPage:
+      title: IssuesPage
+      type: object
+      properties:
+        nextToken:
+          type: string
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Issue'
+    NewComment:
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          description:
+            The content associated with the comment.
+    Comment:
+      title: Comment
+      type: object
+      required:
+        - id
+        - author
+        - content
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Comment identifier.
+          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+        author:
+          $ref: '#/components/schemas/User'
+        content:
+          type: string
+          description: The content associated with the Comment.
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp the Comment was last updated.
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp the Comment was created.
+    CommentsPage:
+      title: CommentsPage
+      type: object
+      properties:
+        nextToken:
+          type: string
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+    User:
+      title: User
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: User identifier.
+          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+        name:
+          type: string
+          description: Name of the User.
+          example: John Doe
+        email:
+          type: string
+          description: Email of the User.
+          example: john.doe@example.com
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp the User was last updated.
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp the User was created.
+    UsersPage:
+      title: UsersPage
+      type: object
+      properties:
+        nextToken:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'

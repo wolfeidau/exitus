@@ -19,10 +19,11 @@ var (
 
 // Config for the environment
 type Config struct {
-	Debug  bool   `envconfig:"DEBUG"`
-	Addr   string `envconfig:"ADDR" default:":8080"`
-	Stage  string `envconfig:"STAGE" default:"dev"`
-	Branch string `envconfig:"BRANCH"`
+	Debug        bool   `envconfig:"DEBUG"`
+	Addr         string `envconfig:"ADDR" default:":8080"`
+	Stage        string `envconfig:"STAGE" default:"dev"`
+	Branch       string `envconfig:"BRANCH"`
+	PGDatasource string `envconfig:"PGDATASOURCE"`
 }
 
 func (cfg *Config) validate() error {
@@ -49,8 +50,8 @@ func (cfg *Config) logging() error {
 	return nil
 }
 
-// Load reads configuration from environment variables and validates it
-func Load() (*Config, error) {
+// NewDefaultConfig reads configuration from environment variables and validates it
+func NewDefaultConfig() (*Config, error) {
 	cfg := new(Config)
 	err := envconfig.Process("", cfg)
 	if err != nil {

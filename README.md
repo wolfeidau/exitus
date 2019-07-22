@@ -1,6 +1,10 @@
-# golang-backend-postgres
+# exitus
 
-This project illustrates a backend microservice built with golang which serves data from a postgresql database.
+exitus is a very simple issue tracking API, it was built to illustrate a backend microservice built with golang which serves data from a postgresql database.
+
+The name is derived from the origin of the word "issue".
+
+> Middle English (in the sense ‘outflowing’): from Old French, based on Latin exitus, past participle of exire ‘go out’.
 
 One thing to note is I am using some of the patterns from https://github.com/sourcegraph/sourcegraph to power this service, so big shout out to a great product and project.
 

@@ -1,7 +1,6 @@
-package dbconn
+package db
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"net"
@@ -15,7 +14,8 @@ import (
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
-	"github.com/wolfeidau/golang-backend-postgres/pkg/env"
+	"github.com/wolfeidau/exitus/pkg/conf"
+	"github.com/wolfeidau/exitus/pkg/env"
 )
 
 // DefaultMaxOpenConnections the default value for max open connections in the
@@ -23,45 +23,36 @@ import (
 const DefaultMaxOpenConnections = 30
 
 var (
-	// Global is the global DB connection.
-	// Only use this after a call to ConnectToDB.
-	Global *sql.DB
-
-	defaultDataSource = env.Get("PGDATASOURCE", "")
-
 	registerOnce sync.Once
 )
 
-// ConnectToDB connects to the given DB and stores the handle globally.
-//
-// Note: github.com/lib/pq parses the environment as well. This function will
-// also use the value of PGDATASOURCE if supplied and dataSource is the empty
-// string.
-func ConnectToDB(dataSource string) error {
-	if dataSource == "" {
-		dataSource = defaultDataSource
-	}
+// NewDB create a new DB pool
+func NewDB(cfg *conf.Config) (*sql.DB, error) {
 
 	// Force PostgreSQL session timezone to UTC.
 	if v, ok := os.LookupEnv("PGTZ"); ok && v != "UTC" && v != "utc" {
 		log.Warn().Str("ignoredPGTZ", v).Msg("Ignoring PGTZ environment variable; using PGTZ=UTC.")
 	}
 	if err := os.Setenv("PGTZ", "UTC"); err != nil {
-		return errors.Wrap(err, "Error setting PGTZ=UTC")
+		return nil, errors.Wrap(err, "Error setting PGTZ=UTC")
 	}
 
 	var err error
-	Global, err = openDBWithStartupWait(dataSource)
+	dbconn, err := openDBWithStartupWait(cfg.PGDatasource)
 	if err != nil {
-		return errors.Wrap(err, "DB not available")
+		return nil, errors.Wrap(err, "DB not available")
 	}
-	configureConnectionPool(Global)
+	configureConnectionPool(dbconn)
 
-	if err := DoMigrate(NewMigrate(Global)); err != nil {
-		return errors.Wrap(err, "Failed to migrate the DB.")
+	log.Info().Msg("DoMigrate")
+
+	if err := DoMigrate(NewMigrate(dbconn)); err != nil {
+		return nil, errors.Wrap(err, "Failed to migrate the DB.")
 	}
 
-	return nil
+	log.Info().Msg("DoMigrate complete")
+
+	return dbconn, nil
 }
 
 var startupTimeout = func() time.Duration {
@@ -124,7 +115,7 @@ func Open(dataSource string) (*sql.DB, error) {
 
 // Ping attempts to contact the database and returns a non-nil error upon failure. It is intended to
 // be used by health checks.
-func Ping(ctx context.Context) error { return Global.PingContext(ctx) }
+//func Ping(ctx context.Context) error { return Global.PingContext(ctx) }
 
 // configureConnectionPool sets reasonable sizes on the built in DB queue. By
 // default the connection pool is unbounded, which leads to the error `pq:

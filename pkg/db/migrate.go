@@ -1,4 +1,4 @@
-package dbconn
+package db
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
 	"github.com/rs/zerolog/log"
-	"github.com/wolfeidau/golang-backend-postgres/migrations"
+	"github.com/wolfeidau/exitus/migrations"
 )
 
 // NewMigrate load migrations

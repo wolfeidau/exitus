@@ -11,6 +11,7 @@ lint:
 
 generate:
 	go generate ./migrations/
+	go generate ./pkg/api/
 .PHONY: generate
 
 

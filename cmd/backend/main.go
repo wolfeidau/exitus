@@ -1,32 +1,49 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"io/ioutil"
 
+	"github.com/labstack/echo/v4"
+	echolog "github.com/labstack/gommon/log"
 	"github.com/rs/zerolog/log"
-	"github.com/wolfeidau/golang-backend-postgres/pkg/conf"
-	"github.com/wolfeidau/golang-backend-postgres/pkg/db/dbconn"
+	"github.com/wolfeidau/exitus/pkg/api"
+	"github.com/wolfeidau/exitus/pkg/conf"
+	"github.com/wolfeidau/exitus/pkg/db"
+	"github.com/wolfeidau/exitus/pkg/server"
+	"github.com/wolfeidau/exitus/pkg/store"
 )
 
 func main() {
 
 	// loads configuration from env and configures logger
-	cfg, err := conf.Load()
+	cfg, err := conf.NewDefaultConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to load config")
 	}
 
-	err = dbconn.ConnectToDB("")
+	dbconn, err := db.NewDB(cfg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to db")
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello from Docker")
-	})
+	stores, err := store.New(dbconn, cfg)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to connect to db")
+	}
+
+	svr, err := server.NewServer(cfg, stores)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to bind api")
+	}
+
+	e := echo.New()
+	// shut up
+	e.Logger.SetOutput(ioutil.Discard)
+	e.Logger.SetLevel(echolog.OFF)
+
+	api.RegisterHandlers(e, svr)
 
 	log.Info().Str("addr", cfg.Addr).Msg("starting http listener")
-	err = http.ListenAndServe(cfg.Addr, nil)
+	err = e.Start(cfg.Addr)
 	log.Fatal().Err(err).Msg("Server failed")
 }
