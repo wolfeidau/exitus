@@ -9,6 +9,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/api"
 	"github.com/wolfeidau/exitus/pkg/conf"
 	"github.com/wolfeidau/exitus/pkg/db"
+	"github.com/wolfeidau/exitus/pkg/middleware"
 	"github.com/wolfeidau/exitus/pkg/server"
 	"github.com/wolfeidau/exitus/pkg/store"
 )
@@ -43,7 +44,7 @@ func main() {
 
 	// add a version to the api
 	g := e.Group("/v1")
-
+	g.Use(middleware.RequestLog)
 	api.RegisterHandlers(g, svr)
 
 	log.Info().Str("addr", cfg.Addr).Msg("starting http listener")

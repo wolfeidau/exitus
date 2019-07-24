@@ -26,6 +26,7 @@ The goal of the project is to cover a few key pillars:
 # References
 
 * [F1: A Distributed SQL Database That Scales](http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41344.pdf)
+* [Using PostgreSQL Arrays with Golang](https://www.opsdash.com/blog/postgres-arrays-golang.html)
 
 # License
 

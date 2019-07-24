@@ -16,6 +16,84 @@ servers:
   - url: https://api.issues.wolfe.id.au/v1
     description: Production server
 paths:
+  /customers:
+    post:
+      summary: "Create a customer."
+      operationId: NewCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCustomer'
+      responses:
+        '201':
+          description: customer created response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    get:
+      summary: "Get a list of customers."
+      operationId: Customers
+      parameters:
+        - $ref: '#/components/parameters/q'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/limit'
+      responses:
+        '200':
+          description: customers response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomersPage'
+  /customers/{id}:
+    get:
+      description: Returns a customer based on it's identifier.
+      operationId: GetCustomer
+      parameters:
+        - name: id
+          in: path
+          description: Identifier of customer to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: customer response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+    put:
+      summary: "Update a customer."
+      operationId: UpdateCustomer
+      parameters:
+        - name: id
+          in: path
+          description: Identifier of customer to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatedCustomer'
+      responses:
+        '201':
+          description: customer updated response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
   /projects:
     post:
       summary: "Create a project."
@@ -39,7 +117,8 @@ paths:
       summary: "Get a list of projects."
       operationId: Projects
       parameters:
-        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/q'
+        - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
       responses:
         '200':
@@ -129,7 +208,7 @@ paths:
           required: true
           schema:
             type: string
-        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/filterIssues'
       responses:
@@ -213,7 +292,7 @@ paths:
           required: true
           schema:
             type: string
-        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
       responses:
         '200':
@@ -259,7 +338,8 @@ paths:
       summary: "Get a list of users."
       operationId: Users
       parameters:
-        - $ref: '#/components/parameters/nextToken'
+        - $ref: '#/components/parameters/q'
+        - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
       responses:
         '200':
@@ -290,12 +370,21 @@ paths:
                 $ref: '#/components/schemas/User'
 components:
   parameters:
-    nextToken:
-      name: nextToken
+    q:
+      name: q
       in: query
-      description: Used to request the next page in the list operation.
+      description: Used to query by name in a list operation.
       schema:
         type: string
+        default: ""
+    offset:
+      name: offset
+      in: query
+      description: Used to request the next page in a list operation.
+      schema:
+          type: integer
+          format: int64
+          default: 0
     limit:
       name: limit
       in: query
@@ -315,6 +404,76 @@ components:
         items:
           type: string
   schemas:
+    NewCustomer:
+      required:
+        - name
+        - labels
+      properties:
+        name:
+          type: string
+          description: The name of the customer.
+          example: New Customer
+        description:
+          type: string
+          description:
+            A description of the customer, with some background.
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+    UpdatedCustomer:
+      allOf:
+        - $ref: '#/components/schemas/NewCustomer'
+        - required:
+          - version
+          properties:
+            version:
+              type: integer
+              format: int64
+    Customer:
+      title: Customer
+      type: object
+      required:
+        - id
+        - name
+        - labels
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Customer identifier.
+          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+        name:
+          type: string
+          description: The name of the customer.
+          example: New Customer
+        description:
+          type: string
+          description:
+            A description of the customer, with some background.
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+        updated_at:
+          type: string
+          format: date-time
+          description: The timestamp the customer was last updated
+        created_at:
+          type: string
+          format: date-time
+          description: The timestamp the customer was created
+    CustomersPage:
+      required:
+        - customers
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
     NewProject:
       required:
         - name
@@ -322,7 +481,7 @@ components:
       properties:
         name:
           type: string
-          description: The name of the Project.
+          description: The name of the project.
           example: New Project
         description:
           type: string
@@ -354,7 +513,7 @@ components:
       properties:
         id:
           type: string
-          description: Issue identifier.
+          description: Project identifier.
           example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
         name:
           type: string
@@ -378,11 +537,9 @@ components:
           format: date-time
           description: The timestamp the Project was created
     ProjectsPage:
-      title: ProjectsPage
-      type: object
+      required:
+        - projects
       properties:
-        nextToken:
-          type: string
         projects:
           type: array
           items:
@@ -456,11 +613,9 @@ components:
           format: date-time
           description: The timestamp the Issue was created
     IssuesPage:
-      title: IssuesPage
-      type: object
+      required:
+        - issues
       properties:
-        nextToken:
-          type: string
         issues:
           type: array
           items:
@@ -501,11 +656,9 @@ components:
           format: date-time
           description: The timestamp the Comment was created.
     CommentsPage:
-      title: CommentsPage
-      type: object
+      required:
+        - comments
       properties:
-        nextToken:
-          type: string
         comments:
           type: array
           items:
@@ -541,11 +694,9 @@ components:
           format: date-time
           description: The timestamp the User was created.
     UsersPage:
-      title: UsersPage
-      type: object
+      required:
+        - users
       properties:
-        nextToken:
-          type: string
         users:
           type: array
           items:

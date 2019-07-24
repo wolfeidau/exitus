@@ -28,8 +28,22 @@ type Comment struct {
 
 // CommentsPage defines model for CommentsPage.
 type CommentsPage struct {
-	Comments  *[]Comment `json:"comments,omitempty"`
-	NextToken *string    `json:"nextToken,omitempty"`
+	Comments []Comment `json:"comments"`
+}
+
+// Customer defines model for Customer.
+type Customer struct {
+	CreatedAt   time.Time `json:"created_at"`
+	Description *string   `json:"description,omitempty"`
+	Id          string    `json:"id"`
+	Labels      []string  `json:"labels"`
+	Name        string    `json:"name"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// CustomersPage defines model for CustomersPage.
+type CustomersPage struct {
+	Customers []Customer `json:"customers"`
 }
 
 // Issue defines model for Issue.
@@ -49,13 +63,19 @@ type Issue struct {
 
 // IssuesPage defines model for IssuesPage.
 type IssuesPage struct {
-	Issues    *[]Issue `json:"issues,omitempty"`
-	NextToken *string  `json:"nextToken,omitempty"`
+	Issues []Issue `json:"issues"`
 }
 
 // NewComment defines model for NewComment.
 type NewComment struct {
 	Content string `json:"content"`
+}
+
+// NewCustomer defines model for NewCustomer.
+type NewCustomer struct {
+	Description *string  `json:"description,omitempty"`
+	Labels      []string `json:"labels"`
+	Name        string   `json:"name"`
 }
 
 // NewIssue defines model for NewIssue.
@@ -84,8 +104,15 @@ type Project struct {
 
 // ProjectsPage defines model for ProjectsPage.
 type ProjectsPage struct {
-	NextToken *string    `json:"nextToken,omitempty"`
-	Projects  *[]Project `json:"projects,omitempty"`
+	Projects []Project `json:"projects"`
+}
+
+// UpdatedCustomer defines model for UpdatedCustomer.
+type UpdatedCustomer struct {
+	// Embedded struct due to allOf(#/components/schemas/NewCustomer)
+	NewCustomer
+	// Embedded fields due to inline allOf schema
+	Version int64 `json:"version"`
 }
 
 // UpdatedProject defines model for UpdatedProject.
@@ -107,8 +134,7 @@ type User struct {
 
 // UsersPage defines model for UsersPage.
 type UsersPage struct {
-	NextToken *string `json:"nextToken,omitempty"`
-	Users     *[]User `json:"users,omitempty"`
+	Users []User `json:"users"`
 }
 
 // FilterIssues defines model for filterIssues.
@@ -117,33 +143,51 @@ type FilterIssues []string
 // Limit defines model for limit.
 type Limit int64
 
-// NextToken defines model for nextToken.
-type NextToken string
+// Offset defines model for offset.
+type Offset int64
+
+// Q defines model for q.
+type Q string
+
+// CustomersParams defines parameters for Customers.
+type CustomersParams struct {
+	Q      *Q      `json:"q,omitempty"`
+	Offset *Offset `json:"offset,omitempty"`
+	Limit  *Limit  `json:"limit,omitempty"`
+}
 
 // ProjectsParams defines parameters for Projects.
 type ProjectsParams struct {
-	NextToken *NextToken `json:"nextToken,omitempty"`
-	Limit     *Limit     `json:"limit,omitempty"`
+	Q      *Q      `json:"q,omitempty"`
+	Offset *Offset `json:"offset,omitempty"`
+	Limit  *Limit  `json:"limit,omitempty"`
 }
 
 // IssuesParams defines parameters for Issues.
 type IssuesParams struct {
-	NextToken *NextToken    `json:"nextToken,omitempty"`
-	Limit     *Limit        `json:"limit,omitempty"`
-	Filter    *FilterIssues `json:"filter,omitempty"`
+	Offset *Offset       `json:"offset,omitempty"`
+	Limit  *Limit        `json:"limit,omitempty"`
+	Filter *FilterIssues `json:"filter,omitempty"`
 }
 
 // CommentsParams defines parameters for Comments.
 type CommentsParams struct {
-	NextToken *NextToken `json:"nextToken,omitempty"`
-	Limit     *Limit     `json:"limit,omitempty"`
+	Offset *Offset `json:"offset,omitempty"`
+	Limit  *Limit  `json:"limit,omitempty"`
 }
 
 // UsersParams defines parameters for Users.
 type UsersParams struct {
-	NextToken *NextToken `json:"nextToken,omitempty"`
-	Limit     *Limit     `json:"limit,omitempty"`
+	Q      *Q      `json:"q,omitempty"`
+	Offset *Offset `json:"offset,omitempty"`
+	Limit  *Limit  `json:"limit,omitempty"`
 }
+
+// NewCustomerRequestBody defines body for NewCustomer for application/json ContentType.
+type NewCustomerJSONRequestBody NewCustomer
+
+// UpdateCustomerRequestBody defines body for UpdateCustomer for application/json ContentType.
+type UpdateCustomerJSONRequestBody UpdatedCustomer
 
 // NewProjectRequestBody defines body for NewProject for application/json ContentType.
 type NewProjectJSONRequestBody NewProject
@@ -159,6 +203,14 @@ type NewCommentJSONRequestBody NewComment
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Get a list of customers.// (GET /customers)
+	Customers(ctx echo.Context, params CustomersParams) error
+	// Create a customer.// (POST /customers)
+	NewCustomer(ctx echo.Context) error
+	// (GET /customers/{id})
+	GetCustomer(ctx echo.Context, id string) error
+	// Update a customer.// (PUT /customers/{id})
+	UpdateCustomer(ctx echo.Context, id string) error
 	// Get a list of projects.// (GET /projects)
 	Projects(ctx echo.Context, params ProjectsParams) error
 	// Create a project.// (POST /projects)
@@ -190,19 +242,107 @@ type ServerInterfaceWrapper struct {
 	Handler ServerInterface
 }
 
+// Customers converts echo context to params.
+func (w *ServerInterfaceWrapper) Customers(ctx echo.Context) error {
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params CustomersParams
+	// ------------- Optional query parameter "q" -------------
+	if paramValue := ctx.QueryParam("q"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "q", ctx.QueryParams(), &params.Q)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+	if paramValue := ctx.QueryParam("limit"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.Customers(ctx, params)
+	return err
+}
+
+// NewCustomer converts echo context to params.
+func (w *ServerInterfaceWrapper) NewCustomer(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.NewCustomer(ctx)
+	return err
+}
+
+// GetCustomer converts echo context to params.
+func (w *ServerInterfaceWrapper) GetCustomer(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetCustomer(ctx, id)
+	return err
+}
+
+// UpdateCustomer converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateCustomer(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.UpdateCustomer(ctx, id)
+	return err
+}
+
 // Projects converts echo context to params.
 func (w *ServerInterfaceWrapper) Projects(ctx echo.Context) error {
 	var err error
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ProjectsParams
-	// ------------- Optional query parameter "nextToken" -------------
-	if paramValue := ctx.QueryParam("nextToken"); paramValue != "" {
+	// ------------- Optional query parameter "q" -------------
+	if paramValue := ctx.QueryParam("q"); paramValue != "" {
 	}
 
-	err = runtime.BindQueryParameter("form", true, false, "nextToken", ctx.QueryParams(), &params.NextToken)
+	err = runtime.BindQueryParameter("form", true, false, "q", ctx.QueryParams(), &params.Q)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter nextToken: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
 	}
 
 	// ------------- Optional query parameter "limit" -------------
@@ -273,13 +413,13 @@ func (w *ServerInterfaceWrapper) Issues(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params IssuesParams
-	// ------------- Optional query parameter "nextToken" -------------
-	if paramValue := ctx.QueryParam("nextToken"); paramValue != "" {
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
 	}
 
-	err = runtime.BindQueryParameter("form", true, false, "nextToken", ctx.QueryParams(), &params.NextToken)
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter nextToken: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
 	}
 
 	// ------------- Optional query parameter "limit" -------------
@@ -366,13 +506,13 @@ func (w *ServerInterfaceWrapper) Comments(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params CommentsParams
-	// ------------- Optional query parameter "nextToken" -------------
-	if paramValue := ctx.QueryParam("nextToken"); paramValue != "" {
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
 	}
 
-	err = runtime.BindQueryParameter("form", true, false, "nextToken", ctx.QueryParams(), &params.NextToken)
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter nextToken: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
 	}
 
 	// ------------- Optional query parameter "limit" -------------
@@ -451,13 +591,22 @@ func (w *ServerInterfaceWrapper) Users(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params UsersParams
-	// ------------- Optional query parameter "nextToken" -------------
-	if paramValue := ctx.QueryParam("nextToken"); paramValue != "" {
+	// ------------- Optional query parameter "q" -------------
+	if paramValue := ctx.QueryParam("q"); paramValue != "" {
 	}
 
-	err = runtime.BindQueryParameter("form", true, false, "nextToken", ctx.QueryParams(), &params.NextToken)
+	err = runtime.BindQueryParameter("form", true, false, "q", ctx.QueryParams(), &params.Q)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter nextToken: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "offset", ctx.QueryParams(), &params.Offset)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter offset: %s", err))
 	}
 
 	// ------------- Optional query parameter "limit" -------------
@@ -496,6 +645,10 @@ func RegisterHandlers(router runtime.EchoRouter, si ServerInterface) {
 		Handler: si,
 	}
 
+	router.GET("/customers", wrapper.Customers)
+	router.POST("/customers", wrapper.NewCustomer)
+	router.GET("/customers/:id", wrapper.GetCustomer)
+	router.PUT("/customers/:id", wrapper.UpdateCustomer)
 	router.GET("/projects", wrapper.Projects)
 	router.POST("/projects", wrapper.NewProject)
 	router.GET("/projects/:id", wrapper.GetProject)
@@ -513,37 +666,40 @@ func RegisterHandlers(router runtime.EchoRouter, si ServerInterface) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"q78DAAD//5vycDrSLAAA",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
