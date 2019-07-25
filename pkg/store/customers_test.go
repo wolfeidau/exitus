@@ -10,7 +10,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/store"
 )
 
-func TestCustomers_CreateGetUpdate(t *testing.T) {
+func TestCustomers_CreateGetUpdateList(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
@@ -52,4 +52,11 @@ func TestCustomers_CreateGetUpdate(t *testing.T) {
 
 	assert.Equal("updated test customer", newCust.Name)
 
+	listCust, err := cstore.List(ctx, store.NewCustomersListOptions("test", 0, 100))
+	if err != nil {
+		t.Fatal("failed to get customer by id")
+	}
+
+	assert.Len(listCust, 1)
+	assert.Equal(newCust, &listCust[0])
 }

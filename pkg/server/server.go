@@ -66,6 +66,7 @@ func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
 		if _, ok := err.(*store.CustomerNotFoundError); ok {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
+		log.Error().Err(err).Msg("get customer failed")
 		return err
 	}
 
@@ -74,7 +75,17 @@ func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
 
 // UpdateCustomer Update a customer. (PUT /customers/{id})
 func (sv *Server) UpdateCustomer(ctx echo.Context, id string) error {
-	return nil
+	upCust := new(api.UpdatedCustomer)
+	if err := ctx.Bind(upCust); err != nil {
+		return err
+	}
+
+	resCust, err := sv.stores.Customers.Update(ctx.Request().Context(), upCust, id)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, resCust)
 }
 
 // Projects Get a list of projects. (GET /projects)
@@ -107,6 +118,7 @@ func (sv *Server) NewProject(ctx echo.Context) error {
 		if err == store.ErrProjectNameAlreadyExists {
 			return echo.NewHTTPError(http.StatusConflict, err.Error())
 		}
+		log.Error().Err(err).Msg("new project failed")
 		return err
 	}
 
@@ -121,6 +133,7 @@ func (sv *Server) GetProject(ctx echo.Context, id string) error {
 		if _, ok := err.(*store.ProjectNotFoundError); ok {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
+		log.Error().Err(err).Msg("get project failed")
 		return err
 	}
 
@@ -129,45 +142,55 @@ func (sv *Server) GetProject(ctx echo.Context, id string) error {
 
 // UpdateProject Update a project. (PUT /projects/{id})
 func (sv *Server) UpdateProject(ctx echo.Context, id string) error {
-	return nil
+	upProj := new(api.UpdatedProject)
+	if err := ctx.Bind(upProj); err != nil {
+		return err
+	}
+
+	resProj, err := sv.stores.Projects.Update(ctx.Request().Context(), upProj, id, DefaultCustomerID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, resProj)
 }
 
 // Issues Get a list of issues. (GET /projects/{project_id}/issues)
 func (sv *Server) Issues(ctx echo.Context, projectId string, params api.IssuesParams) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // NewIssue Create a issue. (POST /projects/{project_id}/issues)
 func (sv *Server) NewIssue(ctx echo.Context, projectId string) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // GetIssue (GET /projects/{project_id}/issues/{id})
 func (sv *Server) GetIssue(ctx echo.Context, projectId string, id string) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // Comments Get a list of Comments. (GET /projects/{project_id}/issues/{issue_id}/comments)
 func (sv *Server) Comments(ctx echo.Context, projectId string, issueId string, params api.CommentsParams) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // NewComment Create a comment on a issue. (POST /projects/{project_id}/issues/{issue_id}/comments)
 func (sv *Server) NewComment(ctx echo.Context, projectId string, issueId string) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // GetComment (GET /projects/{project_id}/issues/{issue_id}/comments/{id})
 func (sv *Server) GetComment(ctx echo.Context, projectId string, issueId string, id string) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // Users Get a list of users. (GET /users)
 func (sv *Server) Users(ctx echo.Context, params api.UsersParams) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // GetUser (GET /users/{id})
 func (sv *Server) GetUser(ctx echo.Context, id string) error {
-	return nil
+	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }

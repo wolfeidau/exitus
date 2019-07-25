@@ -3,12 +3,12 @@ package store
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/keegancsmith/sqlf"
 	"github.com/lib/pq"
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"github.com/wolfeidau/exitus/pkg/api"
 	"github.com/wolfeidau/exitus/pkg/conf"
@@ -57,25 +57,32 @@ func (cs *CustomersPG) GetByID(ctx context.Context, customerId string) (*api.Cus
 	if len(custs) == 0 {
 		return nil, &CustomerNotFoundError{fmt.Sprintf("id %s", customerId)}
 	}
+
 	return &custs[0], nil
 }
 
 // Update update customer by id
 func (cs *CustomersPG) Update(ctx context.Context, updatedCustomer *api.UpdatedCustomer, customerId string) (*api.Customer, error) {
 
-	q := `UPDATE customers
-		SET name=$2, labels=$3, updated_at=$4, description=$5
-		WHERE id=$1;`
+	fields := []*sqlf.Query{sqlf.Sprintf("name=%s, updated_at=%s", updatedCustomer.Name, time.Now())}
 
-	if _, err := cs.dbconn.ExecContext(ctx, q, customerId,
-		updatedCustomer.Name, pq.Array(updatedCustomer.Labels), time.Now(), updatedCustomer.Description); err != nil {
-		return nil, err
+	if updatedCustomer.Labels != nil {
+		fields = append(fields, sqlf.Sprintf("labels=%s", pq.Array(updatedCustomer.Labels)))
+	}
+
+	if updatedCustomer.Description != nil {
+		fields = append(fields, sqlf.Sprintf("description=%s", updatedCustomer.Description))
+	}
+
+	qry := sqlf.Sprintf("UPDATE customers SET %s WHERE id=%s", sqlf.Join(fields, ","), customerId)
+
+	if _, err := cs.dbconn.ExecContext(ctx, qry.Query(sqlf.PostgresBindVar), qry.Args()...); err != nil {
+		return nil, errors.Wrapf(err, "failed to update customer by id: %s", customerId)
 	}
 
 	resCust, err := cs.GetByID(ctx, customerId)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to update customer")
-		return nil, err
+		return nil, errors.Wrapf(err, "failed to get customer by id: %s", customerId)
 	}
 
 	return resCust, nil
@@ -108,7 +115,7 @@ func (cs *CustomersPG) Create(ctx context.Context, newCustomer *api.NewCustomer)
 			}
 		}
 
-		return nil, err
+		return nil, errors.Wrapf(err, "failed to create customer with name: %s", newCustomer.Name)
 	}
 
 	return resCust, nil

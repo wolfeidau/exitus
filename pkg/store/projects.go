@@ -3,12 +3,12 @@ package store
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
+	"time"
 
 	"github.com/keegancsmith/sqlf"
 	"github.com/lib/pq"
-	"github.com/rs/zerolog/log"
+	"github.com/pkg/errors"
 	"github.com/wolfeidau/exitus/pkg/api"
 	"github.com/wolfeidau/exitus/pkg/conf"
 	"github.com/wolfeidau/exitus/pkg/db"
@@ -30,6 +30,7 @@ func (e *ProjectNotFoundError) Error() string {
 type Projects interface {
 	GetByID(ctx context.Context, projectId string, customerId string) (*api.Project, error)
 	Create(ctx context.Context, newProj *api.NewProject, customerId string) (*api.Project, error)
+	Update(ctx context.Context, updatedProject *api.UpdatedProject, projectId string, customerId string) (*api.Project, error)
 	List(ctx context.Context, opt *ProjectsListOptions, customerId string) ([]api.Project, error)
 }
 
@@ -57,6 +58,34 @@ func (ps *ProjectsPG) GetByID(ctx context.Context, projectId string, customerId 
 	return &projs[0], nil
 }
 
+// Update update a project
+func (ps *ProjectsPG) Update(ctx context.Context, updatedProject *api.UpdatedProject, projectId string, customerId string) (*api.Project, error) {
+
+	fields := []*sqlf.Query{sqlf.Sprintf("name=%s, updated_at=%s", updatedProject.Name, time.Now())}
+
+	if updatedProject.Labels != nil {
+		fields = append(fields, sqlf.Sprintf("labels=%s", pq.Array(updatedProject.Labels)))
+	}
+
+	if updatedProject.Description != nil {
+		fields = append(fields, sqlf.Sprintf("description=%s", updatedProject.Description))
+	}
+
+	qry := sqlf.Sprintf("UPDATE projects SET %s WHERE id=%s AND customer_id=%s", sqlf.Join(fields, ","), projectId, customerId)
+
+	if _, err := ps.dbconn.ExecContext(ctx, qry.Query(sqlf.PostgresBindVar), qry.Args()...); err != nil {
+		return nil, errors.Wrapf(err, "failed to update project by id: %s customerId: %s", projectId, customerId)
+	}
+
+	resCust, err := ps.GetByID(ctx, projectId, customerId)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to update project by id: %s customerId: %s", projectId, customerId)
+	}
+
+	return resCust, nil
+
+}
+
 // Create create a project
 func (ps *ProjectsPG) Create(ctx context.Context, newProj *api.NewProject, customerId string) (*api.Project, error) {
 
@@ -66,24 +95,21 @@ func (ps *ProjectsPG) Create(ctx context.Context, newProj *api.NewProject, custo
 		Labels:      newProj.Labels,
 	}
 
+	qry := sqlf.Sprintf("INSERT INTO projects(customer_id, name, description, labels) VALUES(%s, %s, %s, %s)",
+		customerId, newProj.Name, newProj.Description, pq.Array(newProj.Labels))
+
 	err := db.WithTransaction(ctx, ps.dbconn, func(tx db.Transaction) error {
 		return tx.QueryRowContext(
-			ctx,
-			`INSERT INTO projects(customer_id, name, description, labels) VALUES($1, $2, $3, $4)
-			RETURNING id, created_at, updated_at`,
-			customerId, newProj.Name, newProj.Description, pq.Array(newProj.Labels),
+			ctx, qry.Query(sqlf.PostgresBindVar)+" RETURNING id, created_at, updated_at", qry.Args()...,
 		).Scan(&resProj.Id, &resProj.CreatedAt, &resProj.UpdatedAt)
 	})
 	if err != nil {
-		log.Error().Err(err).Msg("failed to create project")
-
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Constraint {
 			case "projects_customer_id_name_key":
 				return nil, ErrProjectNameAlreadyExists
 			}
 		}
-
 		return nil, err
 	}
 
@@ -113,11 +139,9 @@ func (ps *ProjectsPG) List(ctx context.Context, opt *ProjectsListOptions, custom
 	conds := ListNameLikeSQL(opt.NameLikeOptions)
 	conds = append(conds, sqlf.Sprintf("customer_id = %s", customerId))
 
-	q := sqlf.Sprintf("WHERE %s ORDER BY id ASC %s", sqlf.Join(conds, "AND"), opt.LimitOffset.SQL())
+	qry := sqlf.Sprintf("WHERE %s ORDER BY id ASC %s", sqlf.Join(conds, "AND"), opt.LimitOffset.SQL())
 
-	log.Info().Str("q", q.Query(sqlf.PostgresBindVar)).Msg("Projects List getBySQL")
-
-	return ps.getBySQL(ctx, q.Query(sqlf.PostgresBindVar), q.Args()...)
+	return ps.getBySQL(ctx, qry.Query(sqlf.PostgresBindVar), qry.Args()...)
 }
 
 func (ps *ProjectsPG) getBySQL(ctx context.Context, query string, args ...interface{}) ([]api.Project, error) {

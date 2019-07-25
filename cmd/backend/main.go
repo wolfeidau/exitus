@@ -44,7 +44,11 @@ func main() {
 
 	// add a version to the api
 	g := e.Group("/v1")
+
+	g.Use(middleware.RequestID)
+	g.Use(middleware.ErrorLog)
 	g.Use(middleware.RequestLog)
+
 	api.RegisterHandlers(g, svr)
 
 	log.Info().Str("addr", cfg.Addr).Msg("starting http listener")

@@ -10,6 +10,8 @@ import (
 	"github.com/wolfeidau/exitus/pkg/store"
 )
 
+const testCustomerId = "3b5d27e3-3524-4c34-a189-2c0cc30765f9"
+
 func TestProjects_CreateGetUpdate(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
@@ -27,7 +29,7 @@ func TestProjects_CreateGetUpdate(t *testing.T) {
 	newProj, err := pstore.Create(ctx, &api.NewProject{
 		Name:   "test project",
 		Labels: []string{"test"},
-	}, "3b5d27e3-3524-4c34-a189-2c0cc30765f9")
+	}, testCustomerId)
 	if err != nil {
 		t.Fatal("failed to load config")
 	}
@@ -42,4 +44,21 @@ func TestProjects_CreateGetUpdate(t *testing.T) {
 	}
 
 	assert.Equal(newProj, getProj)
+
+	newProj, err = pstore.Update(ctx, &api.UpdatedProject{
+		NewProject: api.NewProject{
+			Name:   "updated test project",
+			Labels: []string{"test", "update"},
+		},
+	}, newProj.Id, testCustomerId)
+
+	assert.Equal("updated test project", newProj.Name)
+
+	listProj, err := pstore.List(ctx, store.NewProjectsListOptions("test", 0, 100), testCustomerId)
+	if err != nil {
+		t.Fatal("failed to get project by id")
+	}
+
+	assert.Len(listProj, 1)
+	assert.Equal(newProj, &listProj[0])
 }
