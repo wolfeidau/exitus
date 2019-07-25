@@ -28,9 +28,9 @@ func (e *ProjectNotFoundError) Error() string {
 
 // Projects provides a projects store
 type Projects interface {
-	GetByID(ctx context.Context, projectId string) (*api.Project, error)
+	GetByID(ctx context.Context, projectId string, customerId string) (*api.Project, error)
 	Create(ctx context.Context, newProj *api.NewProject, customerId string) (*api.Project, error)
-	List(ctx context.Context, opt *ProjectsListOptions) ([]api.Project, error)
+	List(ctx context.Context, opt *ProjectsListOptions, customerId string) ([]api.Project, error)
 }
 
 // ProjectsPG provides a projects store for postgresql
@@ -45,7 +45,7 @@ func NewProjects(dbconn *sql.DB, cfg *conf.Config) Projects {
 }
 
 // GetByID get project by id
-func (ps *ProjectsPG) GetByID(ctx context.Context, projectId string) (*api.Project, error) {
+func (ps *ProjectsPG) GetByID(ctx context.Context, projectId string, customerId string) (*api.Project, error) {
 	projs, err := ps.getBySQL(ctx, "WHERE id=$1 LIMIT 1", projectId)
 	if err != nil {
 		return nil, err
@@ -105,12 +105,13 @@ func NewProjectsListOptions(query string, offset int, limit int) *ProjectsListOp
 }
 
 // List list all projects
-func (ps *ProjectsPG) List(ctx context.Context, opt *ProjectsListOptions) ([]api.Project, error) {
+func (ps *ProjectsPG) List(ctx context.Context, opt *ProjectsListOptions, customerId string) ([]api.Project, error) {
 	if opt == nil {
 		opt = &ProjectsListOptions{}
 	}
 
 	conds := ListNameLikeSQL(opt.NameLikeOptions)
+	conds = append(conds, sqlf.Sprintf("customer_id = %s", customerId))
 
 	q := sqlf.Sprintf("WHERE %s ORDER BY id ASC %s", sqlf.Join(conds, "AND"), opt.LimitOffset.SQL())
 

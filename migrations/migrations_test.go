@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/wolfeidau/golang-backend-postgres/migrations"
+	"github.com/wolfeidau/exitus/migrations"
 )
 
 func TestIDConstraints(t *testing.T) {

@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  exitus_testing_db:
+    image: postgres:10.7
+    environment:
+        - POSTGRES_DB=testing
+        - POSTGRES_USER=testing
+        - POSTGRES_PASSWORD=6jhVPaQWhgEMl0sXPnNmkLfS
+        - POSTGRES_ROOT_PASSWORD=qgZqZGdoe5loJ0OrZvq36LBr
+    volumes:
+      - exitus_testing_postgresql:/var/lib/postgresql
+      - exitus_testing_postgresql_data:/var/lib/postgresql/data
+
+  exitus_testing:
+      build: ../
+      command: ["make", "test"]
+      environment:
+        - LOGLEVEL=DEBUG
+        - PGDATASOURCE=postgres://testing:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/testing?sslmode=disable
+        - ADDR=:8080
+        - STAGE=local
+        - BRANCH=master
+      depends_on:
+        - exitus_testing_db
+      links:
+        - exitus_testing_db:postgres
+      ports:
+        - "18443:8443"
+        - "18080:8080"
+      volumes:
+        - exitus_testing_gomod_data:/go/pkg/mod
+        - ../:/src
+volumes:
+  exitus_testing_postgresql:
+  exitus_testing_postgresql_data:
+  exitus_testing_gomod_data:

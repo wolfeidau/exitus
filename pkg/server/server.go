@@ -3,9 +3,8 @@ package server
 import (
 	"net/http"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 	"github.com/wolfeidau/exitus/pkg/api"
 	"github.com/wolfeidau/exitus/pkg/conf"
 	"github.com/wolfeidau/exitus/pkg/store"
@@ -86,7 +85,7 @@ func (sv *Server) Projects(ctx echo.Context, params api.ProjectsParams) error {
 
 	opt := store.NewProjectsListOptions(query, offset, limit)
 
-	resProjs, err := sv.stores.Projects.List(ctx.Request().Context(), opt)
+	resProjs, err := sv.stores.Projects.List(ctx.Request().Context(), opt, DefaultCustomerID)
 	if err != nil {
 		log.Error().Err(err).Msg("Projects failed")
 		return err
@@ -117,7 +116,7 @@ func (sv *Server) NewProject(ctx echo.Context) error {
 // GetProject (GET /projects/{id})
 func (sv *Server) GetProject(ctx echo.Context, id string) error {
 
-	resProj, err := sv.stores.Projects.GetByID(ctx.Request().Context(), id)
+	resProj, err := sv.stores.Projects.GetByID(ctx.Request().Context(), id, DefaultCustomerID)
 	if err != nil {
 		if _, ok := err.(*store.ProjectNotFoundError); ok {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())

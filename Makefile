@@ -3,6 +3,7 @@ export APPNAME
 
 deps:
 	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
+	curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.5.0/migrate.linux-amd64.tar.gz | tar xvz -C .bin/
 .PHONY: deps
 
 lint:
@@ -13,6 +14,15 @@ generate:
 	go generate ./migrations/
 	go generate ./pkg/api/
 .PHONY: generate
+
+test:
+	$(shell pwd)/.bin/migrate.linux-amd64 -database "postgresql://testing:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/testing?sslmode=disable" -path ./migrations up
+	go test -cover -v ./...
+.PHONY: test
+
+docker-compose-test:
+	docker-compose -f dev/docker-compose.yml up  --exit-code-from exitus_testing
+.PHONY: docker-compose-test
 
 local: generate
 	docker-compose up

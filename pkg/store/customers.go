@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/keegancsmith/sqlf"
 	"github.com/lib/pq"
@@ -30,6 +31,7 @@ func (e *CustomerNotFoundError) Error() string {
 type Customers interface {
 	GetByID(ctx context.Context, customerId string) (*api.Customer, error)
 	Create(ctx context.Context, newCustomer *api.NewCustomer) (*api.Customer, error)
+	Update(ctx context.Context, updatedCustomer *api.UpdatedCustomer, customerId string) (*api.Customer, error)
 	List(ctx context.Context, opt *CustomersListOptions) ([]api.Customer, error)
 }
 
@@ -48,6 +50,7 @@ func NewCustomers(dbconn *sql.DB, cfg *conf.Config) Customers {
 func (cs *CustomersPG) GetByID(ctx context.Context, customerId string) (*api.Customer, error) {
 	custs, err := cs.getBySQL(ctx, "WHERE id=$1 LIMIT 1", customerId)
 	if err != nil {
+		log.Error().Err(err).Msg("failed to get customer by id")
 		return nil, err
 	}
 
@@ -55,6 +58,27 @@ func (cs *CustomersPG) GetByID(ctx context.Context, customerId string) (*api.Cus
 		return nil, &CustomerNotFoundError{fmt.Sprintf("id %s", customerId)}
 	}
 	return &custs[0], nil
+}
+
+// Update update customer by id
+func (cs *CustomersPG) Update(ctx context.Context, updatedCustomer *api.UpdatedCustomer, customerId string) (*api.Customer, error) {
+
+	q := `UPDATE customers
+		SET name=$2, labels=$3, updated_at=$4, description=$5
+		WHERE id=$1;`
+
+	if _, err := cs.dbconn.ExecContext(ctx, q, customerId,
+		updatedCustomer.Name, pq.Array(updatedCustomer.Labels), time.Now(), updatedCustomer.Description); err != nil {
+		return nil, err
+	}
+
+	resCust, err := cs.GetByID(ctx, customerId)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to update customer")
+		return nil, err
+	}
+
+	return resCust, nil
 }
 
 // Create create a customer
@@ -75,7 +99,7 @@ func (cs *CustomersPG) Create(ctx context.Context, newCustomer *api.NewCustomer)
 		).Scan(&resCust.Id, &resCust.CreatedAt, &resCust.UpdatedAt)
 	})
 	if err != nil {
-		log.Error().Err(err).Msg("failed to create project")
+		log.Error().Err(err).Msg("failed to create customer")
 
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Constraint {
