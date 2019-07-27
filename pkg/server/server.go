@@ -10,8 +10,16 @@ import (
 	"github.com/wolfeidau/exitus/pkg/store"
 )
 
-// DefaultCustomerID TODO NOT THIS
-const DefaultCustomerID = "a4a777ff-fd47-42ab-84b4-1cca19a51f8f"
+const (
+	// DefaultCustomerID TODO NOT THIS
+	DefaultCustomerID = "a4a777ff-fd47-42ab-84b4-1cca19a51f8f"
+
+	// DefaultReporter TODO NOT THIS
+	DefaultReporter = "34a20135-1c9b-4c4d-b590-7771207ed847"
+
+	// DefaultAuthor TODO NOT THIS
+	DefaultAuthor = "3fbecb27-1f23-4ed0-91e4-68f97a1f0364"
+)
 
 // Server represents all server handlers.
 type Server struct {
@@ -33,7 +41,6 @@ func (sv *Server) Customers(ctx echo.Context, params api.CustomersParams) error 
 
 	resCusts, err := sv.stores.Customers.List(ctx.Request().Context(), opt)
 	if err != nil {
-		log.Error().Err(err).Msg("Projects failed")
 		return err
 	}
 
@@ -66,7 +73,6 @@ func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
 		if _, ok := err.(*store.CustomerNotFoundError); ok {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-		log.Error().Err(err).Msg("get customer failed")
 		return err
 	}
 
@@ -98,7 +104,6 @@ func (sv *Server) Projects(ctx echo.Context, params api.ProjectsParams) error {
 
 	resProjs, err := sv.stores.Projects.List(ctx.Request().Context(), opt, DefaultCustomerID)
 	if err != nil {
-		log.Error().Err(err).Msg("Projects failed")
 		return err
 	}
 
@@ -118,7 +123,6 @@ func (sv *Server) NewProject(ctx echo.Context) error {
 		if err == store.ErrProjectNameAlreadyExists {
 			return echo.NewHTTPError(http.StatusConflict, err.Error())
 		}
-		log.Error().Err(err).Msg("new project failed")
 		return err
 	}
 
@@ -133,7 +137,6 @@ func (sv *Server) GetProject(ctx echo.Context, id string) error {
 		if _, ok := err.(*store.ProjectNotFoundError); ok {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-		log.Error().Err(err).Msg("get project failed")
 		return err
 	}
 
@@ -157,32 +160,118 @@ func (sv *Server) UpdateProject(ctx echo.Context, id string) error {
 
 // Issues Get a list of issues. (GET /projects/{project_id}/issues)
 func (sv *Server) Issues(ctx echo.Context, projectId string, params api.IssuesParams) error {
-	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+	query, limit, offset := listArgs(params.Q, params.Limit, params.Offset)
+	log.Info().Str("query", query).Int("offset", offset).Int("limit", limit).Msg("IssuesListOptions")
+
+	opt := store.NewIssueListOptions(query, offset, limit)
+
+	resIssues, err := sv.stores.Issues.List(ctx.Request().Context(), opt, projectId, DefaultCustomerID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, &api.IssuesPage{Issues: resIssues})
 }
 
 // NewIssue Create a issue. (POST /projects/{project_id}/issues)
 func (sv *Server) NewIssue(ctx echo.Context, projectId string) error {
-	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+	newIssue := new(api.NewIssue)
+	if err := ctx.Bind(newIssue); err != nil {
+		return err
+	}
+
+	resIssue, err := sv.stores.Issues.Create(ctx.Request().Context(), newIssue, projectId, DefaultCustomerID, DefaultReporter)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusCreated, resIssue)
+}
+
+// UpdateIssue (PUT /projects/{project_id}/issues/{id})
+func (sv *Server) UpdateIssue(ctx echo.Context, projectId string, id string) error {
+	upIssue := new(api.UpdatedIssue)
+	if err := ctx.Bind(upIssue); err != nil {
+		return err
+	}
+
+	resIssue, err := sv.stores.Issues.Update(ctx.Request().Context(), upIssue, id, projectId, DefaultCustomerID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, resIssue)
 }
 
 // GetIssue (GET /projects/{project_id}/issues/{id})
 func (sv *Server) GetIssue(ctx echo.Context, projectId string, id string) error {
-	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+	resIssue, err := sv.stores.Issues.GetByID(ctx.Request().Context(), id, projectId, DefaultCustomerID)
+	if err != nil {
+		if _, ok := err.(*store.IssueNotFoundError); ok {
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		}
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, resIssue)
 }
 
 // Comments Get a list of Comments. (GET /projects/{project_id}/issues/{issue_id}/comments)
 func (sv *Server) Comments(ctx echo.Context, projectId string, issueId string, params api.CommentsParams) error {
-	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+	query, limit, offset := listArgs(params.Q, params.Limit, params.Offset)
+	log.Info().Str("query", query).Int("offset", offset).Int("limit", limit).Msg("CommentsListOptions")
+
+	opt := store.NewCommentListOptions(query, offset, limit)
+
+	resComments, err := sv.stores.Comments.List(ctx.Request().Context(), opt, issueId, projectId, DefaultCustomerID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, &api.CommentsPage{Comments: resComments})
 }
 
 // NewComment Create a comment on a issue. (POST /projects/{project_id}/issues/{issue_id}/comments)
 func (sv *Server) NewComment(ctx echo.Context, projectId string, issueId string) error {
-	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+	newComment := new(api.NewComment)
+	if err := ctx.Bind(newComment); err != nil {
+		return err
+	}
+
+	resComment, err := sv.stores.Comments.Create(ctx.Request().Context(), newComment, issueId, projectId, DefaultCustomerID, DefaultAuthor)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusCreated, resComment)
+}
+
+// UpdateComment (PUT /projects/{project_id}/issues/{issue_id}/comments/{id})
+func (sv *Server) UpdateComment(ctx echo.Context, projectId string, issueId string, id string) error {
+	upComment := new(api.UpdatedComment)
+	if err := ctx.Bind(upComment); err != nil {
+		return err
+	}
+
+	resComment, err := sv.stores.Comments.Update(ctx.Request().Context(), upComment, id, issueId, projectId, DefaultCustomerID)
+	if err != nil {
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, resComment)
 }
 
 // GetComment (GET /projects/{project_id}/issues/{issue_id}/comments/{id})
 func (sv *Server) GetComment(ctx echo.Context, projectId string, issueId string, id string) error {
-	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+	resComment, err := sv.stores.Comments.GetByID(ctx.Request().Context(), id, issueId, projectId, DefaultCustomerID)
+	if err != nil {
+		if _, ok := err.(*store.CommentNotFoundError); ok {
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
+		}
+		return err
+	}
+
+	return ctx.JSON(http.StatusOK, resComment)
 }
 
 // Users Get a list of users. (GET /users)

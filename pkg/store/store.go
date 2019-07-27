@@ -11,6 +11,8 @@ import (
 type Stores struct {
 	Projects  Projects
 	Customers Customers
+	Issues    Issues
+	Comments  Comments
 }
 
 // New create all the stores
@@ -18,6 +20,8 @@ func New(dbconn *sql.DB, cfg *conf.Config) (*Stores, error) {
 	return &Stores{
 		Projects:  NewProjects(dbconn, cfg),
 		Customers: NewCustomers(dbconn, cfg),
+		Issues:    NewIssues(dbconn, cfg),
+		Comments:  NewComments(dbconn, cfg),
 	}, nil
 }
 

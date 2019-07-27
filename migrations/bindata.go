@@ -4,6 +4,10 @@
 // 20190721131113_extensions.up.sql (1.287kB)
 // 20190723044115_customer_projects.down.sql (43B)
 // 20190723044115_customer_projects.up.sql (802B)
+// 20190726175158_issues.down.sql (19B)
+// 20190726175158_issues.up.sql (835B)
+// 20190726201649_comments.down.sql (21B)
+// 20190726201649_comments.up.sql (609B)
 
 package migrations
 
@@ -152,6 +156,86 @@ func _20190723044115_customer_projectsUpSql() (*asset, error) {
 	return a, nil
 }
 
+var __20190726175158_issuesDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\xc8\x2c\x2e\x2e\x4d\x2d\xb6\xe6\x02\x04\x00\x00\xff\xff\xc5\x99\x96\xb8\x13\x00\x00\x00")
+
+func _20190726175158_issuesDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__20190726175158_issuesDownSql,
+		"20190726175158_issues.down.sql",
+	)
+}
+
+func _20190726175158_issuesDownSql() (*asset, error) {
+	bytes, err := _20190726175158_issuesDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "20190726175158_issues.down.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x8f, 0x23, 0xa6, 0xa2, 0xe1, 0xf, 0xbf, 0x46, 0x1f, 0x45, 0x8f, 0xc5, 0x12, 0xbb, 0xee, 0x1f, 0xde, 0x95, 0x8c, 0x30, 0xa7, 0x28, 0x4a, 0xd6, 0xfa, 0xae, 0x5b, 0x5a, 0x51, 0x56, 0x5e, 0xda}}
+	return a, nil
+}
+
+var __20190726175158_issuesUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x92\x4b\x6f\xc2\x30\x10\x84\xef\xfc\x8a\x55\x2e\x10\x09\x6e\x3d\xd1\x53\x0a\x4b\x85\x9a\x86\xca\x84\x03\xaa\xaa\xc8\x24\x5b\xea\x0a\x92\xc8\x5e\x43\x1f\xea\x7f\xaf\x42\x1e\x34\xf4\x71\xa0\x47\xef\xcc\x37\x5e\x79\x3c\x12\xe8\x85\x08\xa1\x77\xe5\x23\x28\x63\x2c\x19\xe8\x75\x00\x00\x1c\x95\x38\x60\xad\x4a\x60\x8c\x13\x6f\xe1\x87\x87\x43\xb4\xa6\x94\xb4\x64\x8a\x76\x17\x3d\xb7\x5f\x3a\x63\x6b\x38\xdb\x92\x8e\x1a\x24\x98\x85\x10\x2c\x7c\xbf\x32\xe4\x3a\x7b\xa6\x98\x7f\xd5\x35\xe5\x99\x66\xd2\xa7\x2a\x00\x0c\x06\x60\x0d\x69\x50\x09\xa5\xac\x1e\x15\xe9\x12\x91\xc6\xa8\x75\x4a\x54\x23\x95\x1d\xfe\x40\x8c\x5d\x15\x5b\x38\x10\x2b\xa6\x17\x3e\x5d\x22\xce\x52\xa6\x94\x1d\x28\xc4\x6a\x66\x58\x32\x95\x93\x53\xbb\xa1\x1d\x69\xc5\xaf\x2d\x7f\x2c\x99\xd6\x99\x6e\x0f\x37\x72\x45\x1b\x53\x8e\xee\x1f\x9a\x9c\xe6\x5d\xbb\xef\x1f\xdd\xe1\xb0\x54\xeb\x1c\x4d\x92\x29\x89\x64\xb1\x8e\xda\x92\x61\xb9\xcd\x61\xaf\xf8\xe9\x70\x84\xb7\x2c\xa5\x86\x4f\xb3\x7d\x53\x85\xcd\x93\xb3\xc0\x3b\x31\xbd\xf5\xc4\x12\x6e\x70\x09\x3d\x95\xf4\xe1\x4b\xa7\x7d\x38\xf6\xe7\x76\xaa\x17\x9e\xcc\x04\x4e\xaf\x83\x12\x38\xea\x2d\xd0\x05\x81\x13\x14\x18\x8c\x70\x5e\x67\x98\x6f\xf1\x2e\xcc\x02\x18\xa3\x8f\x21\x82\xc0\x79\x28\xa6\xa3\xf0\xc7\x5b\xea\x5f\xd2\x8a\x2d\x9a\xfe\x47\x66\xfd\x8d\xce\xcd\x74\x2f\x3b\x9f\x01\x00\x00\xff\xff\xb3\x8f\x8c\xd0\x43\x03\x00\x00")
+
+func _20190726175158_issuesUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__20190726175158_issuesUpSql,
+		"20190726175158_issues.up.sql",
+	)
+}
+
+func _20190726175158_issuesUpSql() (*asset, error) {
+	bytes, err := _20190726175158_issuesUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "20190726175158_issues.up.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x98, 0xba, 0xe3, 0x9, 0xf1, 0xb6, 0x8d, 0x5f, 0x79, 0x1, 0x42, 0x9a, 0x52, 0xc9, 0x9d, 0x7e, 0x2d, 0x73, 0x2c, 0x6, 0x3d, 0x9d, 0xc9, 0xdb, 0x5d, 0x3e, 0x53, 0x56, 0xd6, 0x6, 0x7c, 0x16}}
+	return a, nil
+}
+
+var __20190726201649_commentsDownSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x72\x09\xf2\x0f\x50\x08\x71\x74\xf2\x71\x55\x48\xce\xcf\xcd\x4d\xcd\x2b\x29\xb6\xe6\x02\x04\x00\x00\xff\xff\x3f\x3c\x11\xc2\x15\x00\x00\x00")
+
+func _20190726201649_commentsDownSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__20190726201649_commentsDownSql,
+		"20190726201649_comments.down.sql",
+	)
+}
+
+func _20190726201649_commentsDownSql() (*asset, error) {
+	bytes, err := _20190726201649_commentsDownSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "20190726201649_comments.down.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x1e, 0x7c, 0x57, 0x36, 0x99, 0x73, 0x7c, 0x5c, 0x15, 0x15, 0x93, 0x73, 0xa7, 0xfb, 0x4b, 0x48, 0x69, 0xc2, 0xca, 0x17, 0xbe, 0xc8, 0x39, 0x54, 0xbd, 0xb1, 0xe, 0xc0, 0x56, 0x85, 0xea, 0x7}}
+	return a, nil
+}
+
+var __20190726201649_commentsUpSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x9c\x50\xbd\x6e\xf2\x40\x10\xec\x79\x8a\x11\x15\x96\x4c\xf7\x75\x5f\xe5\xc0\x12\xa1\x38\x26\x3a\x8e\x82\xca\xb2\xf0\x26\x5c\x24\xdf\xa1\xbb\xbd\x10\xe5\xe9\x23\xb0\x71\x20\x81\x14\x29\x77\xe7\x67\x77\x66\xa2\x28\xd3\x04\x9d\xdd\xe5\x84\x8d\x6b\x1a\xb6\x12\x30\x1a\x00\xc0\xd0\xd4\x43\xc4\x68\x6a\x4c\x69\x96\xad\x72\x7d\x1c\xca\x17\xb6\xec\x2b\xe1\xf2\xed\xdf\x28\x49\x5b\xe6\x26\x06\x71\x0d\xfb\xb2\x97\x14\x0b\x8d\x62\x95\xe7\x1d\x61\xe7\xdd\x2b\x6f\xe4\x26\x6e\x42\x88\x7c\x13\xad\xa2\x6c\x9d\xff\x8e\x1d\x20\x8c\xc7\x88\x81\x3d\x4c\xcd\x56\xcc\xb3\x61\xdf\x7d\xe4\xac\xb0\x95\x21\x84\xdf\xe5\xf4\xa5\xe7\x4a\xb8\x2e\xab\xc3\xda\x34\x1c\xa4\x6a\x76\xd8\x1b\xd9\x1e\x47\x7c\x38\xcb\x7d\x56\xeb\xf6\x7d\xbc\xb8\xab\xff\x24\x7c\x52\xf3\xc7\x4c\xad\xf1\x40\x6b\x8c\x4c\x9d\xe2\xac\xa7\x14\x5f\x9d\xa4\x38\xe5\x4f\x06\x5d\xa8\xd9\x42\xd1\xfc\xbe\x68\xa5\xe7\xcc\x0b\x8b\x5e\x06\x45\x33\x52\x54\x4c\x68\xd9\x2e\xc3\xaf\x07\x13\x2c\x0a\x4c\x29\x27\x4d\x50\xb4\xd4\x6a\x3e\xd1\x57\x2f\xb7\xcd\x5f\xd8\x1f\xea\xfe\xe9\x7e\xd5\x31\xf9\x3f\xf8\x0c\x00\x00\xff\xff\x51\x37\xe2\x45\x61\x02\x00\x00")
+
+func _20190726201649_commentsUpSqlBytes() ([]byte, error) {
+	return bindataRead(
+		__20190726201649_commentsUpSql,
+		"20190726201649_comments.up.sql",
+	)
+}
+
+func _20190726201649_commentsUpSql() (*asset, error) {
+	bytes, err := _20190726201649_commentsUpSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "20190726201649_comments.up.sql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x3f, 0xd0, 0xa6, 0x6d, 0xbf, 0x1d, 0xef, 0xf5, 0xc7, 0xe6, 0xf9, 0xc4, 0xaa, 0xb0, 0xc3, 0x33, 0xeb, 0xd2, 0x1f, 0x32, 0xf2, 0xde, 0x17, 0x8, 0x1f, 0x51, 0xb3, 0x2d, 0x1a, 0xcb, 0xec, 0x41}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -250,6 +334,14 @@ var _bindata = map[string]func() (*asset, error){
 	"20190723044115_customer_projects.down.sql": _20190723044115_customer_projectsDownSql,
 
 	"20190723044115_customer_projects.up.sql": _20190723044115_customer_projectsUpSql,
+
+	"20190726175158_issues.down.sql": _20190726175158_issuesDownSql,
+
+	"20190726175158_issues.up.sql": _20190726175158_issuesUpSql,
+
+	"20190726201649_comments.down.sql": _20190726201649_commentsDownSql,
+
+	"20190726201649_comments.up.sql": _20190726201649_commentsUpSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -297,6 +389,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"20190721131113_extensions.up.sql":          {_20190721131113_extensionsUpSql, map[string]*bintree{}},
 	"20190723044115_customer_projects.down.sql": {_20190723044115_customer_projectsDownSql, map[string]*bintree{}},
 	"20190723044115_customer_projects.up.sql":   {_20190723044115_customer_projectsUpSql, map[string]*bintree{}},
+	"20190726175158_issues.down.sql":            {_20190726175158_issuesDownSql, map[string]*bintree{}},
+	"20190726175158_issues.up.sql":              {_20190726175158_issuesUpSql, map[string]*bintree{}},
+	"20190726201649_comments.down.sql":          {_20190726201649_commentsDownSql, map[string]*bintree{}},
+	"20190726201649_comments.up.sql":            {_20190726201649_commentsUpSql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory.

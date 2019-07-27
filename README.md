@@ -1,6 +1,6 @@
 # exitus
 
-exitus is a very simple issue tracking API, it was built to illustrate a backend microservice built with golang which serves data from a postgresql database.
+exitus is a very simple issue tracking API, it was built to illustrate a backend [microservice](https://martinfowler.com/articles/microservices.html) written in [Go](https://golang.org/) which serves data from a [PostgreSQL](https://www.postgresql.org/) database.
 
 The name is derived from the origin of the word "issue".
 
@@ -27,6 +27,7 @@ The goal of the project is to cover a few key pillars:
 
 * [F1: A Distributed SQL Database That Scales](http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/41344.pdf)
 * [Using PostgreSQL Arrays with Golang](https://www.opsdash.com/blog/postgres-arrays-golang.html)
+* [PostgreSQL Foreign Key](http://www.postgresqltutorial.com/postgresql-foreign-key/)
 
 # License
 

@@ -16,10 +16,12 @@ require (
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/keegancsmith/sqlf v1.1.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/kevinburke/go-bindata v3.13.0+incompatible // indirect
 	github.com/labstack/echo/v4 v4.1.6
 	github.com/labstack/gommon v0.2.9
 	github.com/lib/pq v1.2.0
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
+	github.com/mr-tron/base58 v1.1.2
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/pkg/errors v0.8.1
 	github.com/rs/zerolog v1.14.3

@@ -208,9 +208,9 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/q'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
-        - $ref: '#/components/parameters/filterIssues'
       responses:
         '200':
           description: issues response
@@ -244,6 +244,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Issue'
+    put:
+      description: Update an issue based on it's identifier.
+      operationId: UpdateIssue
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: Identifier of issue to update
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: issue response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedIssue'
   /projects/{project_id}/issues/{issue_id}/comments:
     post:
       summary: "Create a comment on a issue."
@@ -292,6 +315,7 @@ paths:
           required: true
           schema:
             type: string
+        - $ref: '#/components/parameters/q'
         - $ref: '#/components/parameters/offset'
         - $ref: '#/components/parameters/limit'
       responses:
@@ -333,6 +357,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
+  /projects/{project_id}/issues/{issue_id}/comments/{id}:
+    put:
+      description: Updates a comment based on it's identifier.
+      operationId: UpdateComment
+      parameters:
+        - name: project_id
+          in: path
+          description: Identifier of project
+          required: true
+          schema:
+            type: string
+        - name: issue_id
+          in: path
+          description: Identifier of issue to fetch
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          description: Identifier of comment to update
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: comment response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedComment'
   /users:
     get:
       summary: "Get a list of users."
@@ -547,6 +601,10 @@ components:
     NewIssue:
       required:
         - subject
+        - content
+        - severity
+        - category
+        - labels
       properties:
         subject:
           type: string
@@ -557,33 +615,6 @@ components:
           description:
             The content associated with the issue, any background,
             or details required to help resolve it.
-        labels:
-          type: array
-          description: Labels assigned to an entity.
-          items:
-            type: string
-    Issue:
-      title: Issue
-      type: object
-      required:
-        - id
-        - author
-        - subject
-        - created_at
-        - updated_at
-      properties:
-        id:
-          type: string
-          description: Issue identifier.
-          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
-        author:
-          $ref: '#/components/schemas/User'
-        assignee:
-          $ref: '#/components/schemas/User'
-        subject:
-          type: string
-          description: A subject of the Issue.
-          example: Please fix the error
         severity:
           type: string
           description: A severity of the Issue.
@@ -591,6 +622,57 @@ components:
         category:
           type: string
           description: A category of the Issue.
+          example: bug
+        labels:
+          type: array
+          description: Labels assigned to an entity.
+          items:
+            type: string
+    UpdatedIssue:
+      allOf:
+        - $ref: '#/components/schemas/NewIssue'
+        - required:
+          - version
+          properties:
+            version:
+              type: integer
+              format: int64
+    Issue:
+      title: Issue
+      type: object
+      required:
+        - id
+        - subject
+        - state
+        - severity
+        - category
+        - labels
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Issue identifier.
+          example: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
+        reporter:
+          $ref: '#/components/schemas/User'
+        assignee:
+          $ref: '#/components/schemas/User'
+        subject:
+          type: string
+          description: A subject of the Issue.
+          example: Please fix the error
+        state:
+          type: string
+          description: The state of the Issue.
+          example: open
+        severity:
+          type: string
+          description: The severity of the Issue.
+          example: critical
+        category:
+          type: string
+          description: The category of the Issue.
           example: bug
         content:
           type: string
@@ -628,6 +710,15 @@ components:
           type: string
           description:
             The content associated with the comment.
+    UpdatedComment:
+      allOf:
+        - $ref: '#/components/schemas/NewComment'
+        - required:
+          - version
+          properties:
+            version:
+              type: integer
+              format: int64
     Comment:
       title: Comment
       type: object

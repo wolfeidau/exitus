@@ -49,14 +49,15 @@ type CustomersPage struct {
 // Issue defines model for Issue.
 type Issue struct {
 	Assignee  *User         `json:"assignee,omitempty"`
-	Author    User          `json:"author"`
-	Category  *string       `json:"category,omitempty"`
+	Category  string        `json:"category"`
 	Comments  *CommentsPage `json:"comments,omitempty"`
 	Content   *string       `json:"content,omitempty"`
 	CreatedAt time.Time     `json:"created_at"`
 	Id        string        `json:"id"`
-	Labels    *[]string     `json:"labels,omitempty"`
-	Severity  *string       `json:"severity,omitempty"`
+	Labels    []string      `json:"labels"`
+	Reporter  *User         `json:"reporter,omitempty"`
+	Severity  string        `json:"severity"`
+	State     string        `json:"state"`
 	Subject   string        `json:"subject"`
 	UpdatedAt time.Time     `json:"updated_at"`
 }
@@ -80,9 +81,11 @@ type NewCustomer struct {
 
 // NewIssue defines model for NewIssue.
 type NewIssue struct {
-	Content *string   `json:"content,omitempty"`
-	Labels  *[]string `json:"labels,omitempty"`
-	Subject string    `json:"subject"`
+	Category string   `json:"category"`
+	Content  string   `json:"content"`
+	Labels   []string `json:"labels"`
+	Severity string   `json:"severity"`
+	Subject  string   `json:"subject"`
 }
 
 // NewProject defines model for NewProject.
@@ -107,10 +110,26 @@ type ProjectsPage struct {
 	Projects []Project `json:"projects"`
 }
 
+// UpdatedComment defines model for UpdatedComment.
+type UpdatedComment struct {
+	// Embedded struct due to allOf(#/components/schemas/NewComment)
+	NewComment
+	// Embedded fields due to inline allOf schema
+	Version int64 `json:"version"`
+}
+
 // UpdatedCustomer defines model for UpdatedCustomer.
 type UpdatedCustomer struct {
 	// Embedded struct due to allOf(#/components/schemas/NewCustomer)
 	NewCustomer
+	// Embedded fields due to inline allOf schema
+	Version int64 `json:"version"`
+}
+
+// UpdatedIssue defines model for UpdatedIssue.
+type UpdatedIssue struct {
+	// Embedded struct due to allOf(#/components/schemas/NewIssue)
+	NewIssue
 	// Embedded fields due to inline allOf schema
 	Version int64 `json:"version"`
 }
@@ -165,13 +184,14 @@ type ProjectsParams struct {
 
 // IssuesParams defines parameters for Issues.
 type IssuesParams struct {
-	Offset *Offset       `json:"offset,omitempty"`
-	Limit  *Limit        `json:"limit,omitempty"`
-	Filter *FilterIssues `json:"filter,omitempty"`
+	Q      *Q      `json:"q,omitempty"`
+	Offset *Offset `json:"offset,omitempty"`
+	Limit  *Limit  `json:"limit,omitempty"`
 }
 
 // CommentsParams defines parameters for Comments.
 type CommentsParams struct {
+	Q      *Q      `json:"q,omitempty"`
 	Offset *Offset `json:"offset,omitempty"`
 	Limit  *Limit  `json:"limit,omitempty"`
 }
@@ -225,12 +245,14 @@ type ServerInterface interface {
 	NewIssue(ctx echo.Context, projectId string) error
 	// (GET /projects/{project_id}/issues/{id})
 	GetIssue(ctx echo.Context, projectId string, id string) error
+	// (PUT /projects/{project_id}/issues/{id})
+	UpdateIssue(ctx echo.Context, projectId string, id string) error
 	// Get a list of Comments.// (GET /projects/{project_id}/issues/{issue_id}/comments)
 	Comments(ctx echo.Context, projectId string, issueId string, params CommentsParams) error
 	// Create a comment on a issue.// (POST /projects/{project_id}/issues/{issue_id}/comments)
 	NewComment(ctx echo.Context, projectId string, issueId string) error
-	// (GET /projects/{project_id}/issues/{issue_id}/comments/{id})
-	GetComment(ctx echo.Context, projectId string, issueId string, id string) error
+	// (PUT /projects/{project_id}/issues/{issue_id}/comments/{id})
+	UpdateComment(ctx echo.Context, projectId string, issueId string, id string) error
 	// Get a list of users.// (GET /users)
 	Users(ctx echo.Context, params UsersParams) error
 	// (GET /users/{id})
@@ -413,6 +435,15 @@ func (w *ServerInterfaceWrapper) Issues(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params IssuesParams
+	// ------------- Optional query parameter "q" -------------
+	if paramValue := ctx.QueryParam("q"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "q", ctx.QueryParams(), &params.Q)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
 	// ------------- Optional query parameter "offset" -------------
 	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
 	}
@@ -429,15 +460,6 @@ func (w *ServerInterfaceWrapper) Issues(ctx echo.Context) error {
 	err = runtime.BindQueryParameter("form", true, false, "limit", ctx.QueryParams(), &params.Limit)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter limit: %s", err))
-	}
-
-	// ------------- Optional query parameter "filter" -------------
-	if paramValue := ctx.QueryParam("filter"); paramValue != "" {
-	}
-
-	err = runtime.BindQueryParameter("pipeDelimited", true, false, "filter", ctx.QueryParams(), &params.Filter)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter filter: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
@@ -485,6 +507,30 @@ func (w *ServerInterfaceWrapper) GetIssue(ctx echo.Context) error {
 	return err
 }
 
+// UpdateIssue converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateIssue(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "project_id" -------------
+	var projectId string
+
+	err = runtime.BindStyledParameter("simple", false, "project_id", ctx.Param("project_id"), &projectId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
+	}
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.UpdateIssue(ctx, projectId, id)
+	return err
+}
+
 // Comments converts echo context to params.
 func (w *ServerInterfaceWrapper) Comments(ctx echo.Context) error {
 	var err error
@@ -506,6 +552,15 @@ func (w *ServerInterfaceWrapper) Comments(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params CommentsParams
+	// ------------- Optional query parameter "q" -------------
+	if paramValue := ctx.QueryParam("q"); paramValue != "" {
+	}
+
+	err = runtime.BindQueryParameter("form", true, false, "q", ctx.QueryParams(), &params.Q)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter q: %s", err))
+	}
+
 	// ------------- Optional query parameter "offset" -------------
 	if paramValue := ctx.QueryParam("offset"); paramValue != "" {
 	}
@@ -553,8 +608,8 @@ func (w *ServerInterfaceWrapper) NewComment(ctx echo.Context) error {
 	return err
 }
 
-// GetComment converts echo context to params.
-func (w *ServerInterfaceWrapper) GetComment(ctx echo.Context) error {
+// UpdateComment converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateComment(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "project_id" -------------
 	var projectId string
@@ -581,7 +636,7 @@ func (w *ServerInterfaceWrapper) GetComment(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetComment(ctx, projectId, issueId, id)
+	err = w.Handler.UpdateComment(ctx, projectId, issueId, id)
 	return err
 }
 
@@ -656,9 +711,10 @@ func RegisterHandlers(router runtime.EchoRouter, si ServerInterface) {
 	router.GET("/projects/:project_id/issues", wrapper.Issues)
 	router.POST("/projects/:project_id/issues", wrapper.NewIssue)
 	router.GET("/projects/:project_id/issues/:id", wrapper.GetIssue)
+	router.PUT("/projects/:project_id/issues/:id", wrapper.UpdateIssue)
 	router.GET("/projects/:project_id/issues/:issue_id/comments", wrapper.Comments)
 	router.POST("/projects/:project_id/issues/:issue_id/comments", wrapper.NewComment)
-	router.GET("/projects/:project_id/issues/:issue_id/comments/:id", wrapper.GetComment)
+	router.PUT("/projects/:project_id/issues/:issue_id/comments/:id", wrapper.UpdateComment)
 	router.GET("/users", wrapper.Users)
 	router.GET("/users/:id", wrapper.GetUser)
 }
@@ -666,40 +722,42 @@ func RegisterHandlers(router runtime.EchoRouter, si ServerInterface) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"TT0AAA==",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code
