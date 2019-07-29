@@ -2,8 +2,9 @@ APPNAME  := golang-backend
 export APPNAME
 
 deps:
-	curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.17.1
-	curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.5.0/migrate.linux-amd64.tar.gz | tar xvz -C .bin/
+	mkdir -p $(shell go env GOPATH)/bin
+	if [ ! -f "$(shell go env GOPATH)/bin/golangci-lint" ]; then curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.17.1; fi
+	if [ ! -f "$(shell go env GOPATH)/bin/migrate.linux-amd64" ]; then curl -sfL https://github.com/golang-migrate/migrate/releases/download/v4.5.0/migrate.linux-amd64.tar.gz | tar xvz -C $(shell go env GOPATH)/bin; fi
 .PHONY: deps
 
 lint:
@@ -15,8 +16,8 @@ generate:
 	go generate ./pkg/api/
 .PHONY: generate
 
-test:
-	$(shell pwd)/.bin/migrate.linux-amd64 -database "postgresql://testing:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/testing?sslmode=disable" -path ./migrations up
+test: deps
+	$(shell go env GOPATH)/bin/migrate.linux-amd64 -database "postgresql://testing:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/testing?sslmode=disable" -path ./migrations up
 	go test -cover -v ./...
 .PHONY: test
 

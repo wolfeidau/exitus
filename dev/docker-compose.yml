@@ -6,8 +6,8 @@ services:
     environment:
         - POSTGRES_DB=testing
         - POSTGRES_USER=testing
-        - POSTGRES_PASSWORD=6jhVPaQWhgEMl0sXPnNmkLfS
-        - POSTGRES_ROOT_PASSWORD=qgZqZGdoe5loJ0OrZvq36LBr
+        - POSTGRES_PASSWORD
+        - POSTGRES_ROOT_PASSWORD
     volumes:
       - exitus_testing_postgresql:/var/lib/postgresql
       - exitus_testing_postgresql_data:/var/lib/postgresql/data
@@ -17,7 +17,7 @@ services:
       command: ["make", "test"]
       environment:
         - LOGLEVEL=DEBUG
-        - PGDATASOURCE=postgres://testing:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/testing?sslmode=disable
+        - PGDATASOURCE=postgres://testing:${POSTGRES_PASSWORD}@postgres/testing?sslmode=disable
         - ADDR=:8080
         - STAGE=local
         - BRANCH=master

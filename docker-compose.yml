@@ -5,22 +5,21 @@ services:
   backend_db:
     image: postgres:10.7
     ports:
-      - "15432:15432"
+      - "15432:5432"
     environment:
         - POSTGRES_DB=backend
         - POSTGRES_USER=backend
-        - POSTGRES_PASSWORD=6jhVPaQWhgEMl0sXPnNmkLfS
-        - POSTGRES_ROOT_PASSWORD=qgZqZGdoe5loJ0OrZvq36LBr
+        - POSTGRES_PASSWORD
+        - POSTGRES_ROOT_PASSWORD
     volumes:
       - backend_postgresql:/var/lib/postgresql
       - backend_postgresql_data:/var/lib/postgresql/data
-
   backend:
       build: .
       command: ["go", "run", "cmd/backend/main.go"]
       environment:
         - LOGLEVEL=DEBUG
-        - PGDATASOURCE=postgres://backend:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/backend?sslmode=disable
+        - PGDATASOURCE=postgres://backend:${POSTGRES_PASSWORD}@postgres/backend?sslmode=disable
         - ADDR=:8080
         - STAGE=local
         - BRANCH=master
