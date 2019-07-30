@@ -17,6 +17,7 @@ services:
       command: ["make", "test"]
       environment:
         - LOGLEVEL=DEBUG
+        - POSTGRES_PASSWORD
         - PGDATASOURCE=postgres://testing:${POSTGRES_PASSWORD}@postgres/testing?sslmode=disable
         - ADDR=:8080
         - STAGE=local

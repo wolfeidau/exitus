@@ -17,7 +17,7 @@ generate:
 .PHONY: generate
 
 test: deps
-	$(shell go env GOPATH)/bin/migrate.linux-amd64 -database "postgresql://testing:6jhVPaQWhgEMl0sXPnNmkLfS@postgres/testing?sslmode=disable" -path ./migrations up
+	$(shell go env GOPATH)/bin/migrate.linux-amd64 -database "postgresql://testing:${POSTGRES_PASSWORD}@postgres/testing?sslmode=disable" -path ./migrations up
 	go test -cover -v ./...
 .PHONY: test
 

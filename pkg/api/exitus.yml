@@ -19,7 +19,10 @@ paths:
   /customers:
     post:
       summary: "Create a customer."
+      description: "Create and return a new customer."
       operationId: NewCustomer
+      tags:
+      - customer
       requestBody:
         required: true
         content:
@@ -38,6 +41,9 @@ paths:
     get:
       summary: "Get a list of customers."
       operationId: Customers
+      description: "Return a list of customers."
+      tags:
+      - customer
       parameters:
         - $ref: '#/components/parameters/q'
         - $ref: '#/components/parameters/offset'
@@ -53,8 +59,10 @@ paths:
                   $ref: '#/components/schemas/CustomersPage'
   /customers/{id}:
     get:
-      description: Returns a customer based on it's identifier.
       operationId: GetCustomer
+      description: Returns a customer based on it's identifier.
+      tags:
+      - customer
       parameters:
         - name: id
           in: path
@@ -69,9 +77,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Customer'
+        '404':
+          description: The customer does not exists.
     put:
       summary: "Update a customer."
       operationId: UpdateCustomer
+      description: "Update and return a customer."
+      tags:
+      - customer
       parameters:
         - name: id
           in: path
@@ -98,6 +111,9 @@ paths:
     post:
       summary: "Create a project."
       operationId: NewProject
+      description: "Create and return a new project."
+      tags:
+      - project
       requestBody:
         required: true
         content:
@@ -115,7 +131,10 @@ paths:
                   $ref: '#/components/schemas/Project'
     get:
       summary: "Get a list of projects."
+      description: "Return a list of projects."
       operationId: Projects
+      tags:
+      - project
       parameters:
         - $ref: '#/components/parameters/q'
         - $ref: '#/components/parameters/offset'
@@ -131,8 +150,11 @@ paths:
                   $ref: '#/components/schemas/ProjectsPage'
   /projects/{id}:
     get:
-      description: Returns a project based on it's identifier.
+      summary: "Get a project."
       operationId: GetProject
+      description: Returns a project based on it's identifier.
+      tags:
+      - project
       parameters:
         - name: id
           in: path
@@ -150,6 +172,9 @@ paths:
     put:
       summary: "Update a project."
       operationId: UpdateProject
+      description: "Update and return a project."
+      tags:
+      - project
       parameters:
         - name: id
           in: path
@@ -176,10 +201,13 @@ paths:
     post:
       summary: "Create a issue."
       operationId: NewIssue
+      description: "Create and return a new issue."
+      tags:
+      - issue
       parameters:
         - name: project_id
           in: path
-          description: Identifier of project to update
+          description: Identifier of project to create the issue.
           required: true
           schema:
             type: string
@@ -201,6 +229,9 @@ paths:
     get:
       summary: "Get a list of issues."
       operationId: Issues
+      description: Return a list of issues.
+      tags:
+      - issue
       parameters:
         - name: project_id
           in: path
@@ -222,8 +253,10 @@ paths:
                   $ref: '#/components/schemas/IssuesPage'
   /projects/{project_id}/issues/{id}:
     get:
-      description: Returns a issue based on it's identifier.
       operationId: GetIssue
+      description: Returns a issue based on it's identifier.
+      tags:
+      - issue
       parameters:
         - name: project_id
           in: path
@@ -245,8 +278,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Issue'
     put:
-      description: Update an issue based on it's identifier.
       operationId: UpdateIssue
+      description: Update an issue based on it's identifier.
+      tags:
+      - issue
       parameters:
         - name: project_id
           in: path
@@ -271,6 +306,9 @@ paths:
     post:
       summary: "Create a comment on a issue."
       operationId: NewComment
+      description: Create and return a new comment.
+      tags:
+      - comment
       parameters:
         - name: project_id
           in: path
@@ -302,6 +340,9 @@ paths:
     get:
       summary: "Get a list of Comments."
       operationId: Comments
+      description: Returns a list of comments.
+      tags:
+      - comment
       parameters:
         - name: project_id
           in: path
@@ -329,8 +370,10 @@ paths:
                   $ref: '#/components/schemas/CommentsPage'
   /projects/{project_id}/issues/{issue_id}/comments/{id}:
     get:
-      description: Returns a comment based on it's identifier.
       operationId: GetComment
+      description: Returns a comment based on it's identifier.
+      tags:
+      - comment
       parameters:
         - name: project_id
           in: path
@@ -359,8 +402,10 @@ paths:
                 $ref: '#/components/schemas/Comment'
   /projects/{project_id}/issues/{issue_id}/comments/{id}:
     put:
-      description: Updates a comment based on it's identifier.
       operationId: UpdateComment
+      description: Updates a comment based on it's identifier.
+      tags:
+      - comment
       parameters:
         - name: project_id
           in: path
@@ -391,6 +436,9 @@ paths:
     get:
       summary: "Get a list of users."
       operationId: Users
+      description: Return a list of users.
+      tags:
+      - user
       parameters:
         - $ref: '#/components/parameters/q'
         - $ref: '#/components/parameters/offset'
@@ -406,8 +454,10 @@ paths:
                   $ref: '#/components/schemas/UsersPage'
   /users/{id}:
     get:
-      description: Returns a user based on identifier.
       operationId: GetUser
+      description: Returns a user based on identifier.
+      tags:
+      - user
       parameters:
         - name: id
           in: path
@@ -459,6 +509,7 @@ components:
           type: string
   schemas:
     NewCustomer:
+      description: New Customer request.
       required:
         - name
         - labels
@@ -477,6 +528,7 @@ components:
           items:
             type: string
     UpdatedCustomer:
+      description: Update Customer request.
       allOf:
         - $ref: '#/components/schemas/NewCustomer'
         - required:
@@ -486,7 +538,7 @@ components:
               type: integer
               format: int64
     Customer:
-      title: Customer
+      description: Customer response.
       type: object
       required:
         - id
@@ -521,6 +573,7 @@ components:
           format: date-time
           description: The timestamp the customer was created
     CustomersPage:
+      description: Customer page response.
       required:
         - customers
       properties:
@@ -529,6 +582,7 @@ components:
           items:
             $ref: '#/components/schemas/Customer'
     NewProject:
+      description: New Project request.
       required:
         - name
         - labels
@@ -547,6 +601,7 @@ components:
           items:
             type: string
     UpdatedProject:
+      description: Update Project request.
       allOf:
         - $ref: '#/components/schemas/NewProject'
         - required:
@@ -556,7 +611,7 @@ components:
               type: integer
               format: int64
     Project:
-      title: Project
+      description: Project response.
       type: object
       required:
         - id
@@ -591,6 +646,7 @@ components:
           format: date-time
           description: The timestamp the Project was created
     ProjectsPage:
+      description: Project page response.
       required:
         - projects
       properties:
@@ -599,6 +655,7 @@ components:
           items:
             $ref: '#/components/schemas/Project'
     NewIssue:
+      description: New issue request.
       required:
         - subject
         - content
@@ -629,6 +686,7 @@ components:
           items:
             type: string
     UpdatedIssue:
+      description: Update issue request.
       allOf:
         - $ref: '#/components/schemas/NewIssue'
         - required:
@@ -638,7 +696,7 @@ components:
               type: integer
               format: int64
     Issue:
-      title: Issue
+      description: Issue response.
       type: object
       required:
         - id
@@ -695,6 +753,7 @@ components:
           format: date-time
           description: The timestamp the Issue was created
     IssuesPage:
+      description: Issue page response.
       required:
         - issues
       properties:
@@ -703,6 +762,7 @@ components:
           items:
             $ref: '#/components/schemas/Issue'
     NewComment:
+      description: New Comment request.
       required:
         - content
       properties:
@@ -711,6 +771,7 @@ components:
           description:
             The content associated with the comment.
     UpdatedComment:
+      description: Update Comment request.
       allOf:
         - $ref: '#/components/schemas/NewComment'
         - required:
@@ -720,7 +781,7 @@ components:
               type: integer
               format: int64
     Comment:
-      title: Comment
+      description: Comment response.
       type: object
       required:
         - id
@@ -747,6 +808,7 @@ components:
           format: date-time
           description: The timestamp the Comment was created.
     CommentsPage:
+      description: Comments page response.
       required:
         - comments
       properties:
@@ -755,7 +817,7 @@ components:
           items:
             $ref: '#/components/schemas/Comment'
     User:
-      title: User
+      description: User response.
       type: object
       required:
         - id
@@ -785,6 +847,7 @@ components:
           format: date-time
           description: The timestamp the User was created.
     UsersPage:
+      description: User page response.
       required:
         - users
       properties:
