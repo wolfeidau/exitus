@@ -52,6 +52,9 @@ func TestComments_CreateGetUpdate(t *testing.T) {
 			Content: "updated test comment",
 		},
 	}, newComment.Id, testIssueId, testProjectId, testCustomerId)
+	if err != nil {
+		t.Fatal("failed to update comment by id")
+	}
 
 	assert.Equal("updated test comment", newComment.Content)
 

@@ -15,12 +15,26 @@ info:
 servers:
   - url: https://api.issues.wolfe.id.au/v1
     description: Production server
+security:
+  - OpenId:
+    - exitus/customer.admin
+    - exitus/customer.read
+    - exitus/customer.write
+    - exitus/project.read
+    - exitus/project.write
+    - exitus/issue.read
+    - exitus/issue.write
+    - exitus/comment.read
+    - exitus/comment.write
+    - exitus/user.read
 paths:
   /customers:
     post:
       summary: "Create a customer."
       description: "Create and return a new customer."
       operationId: NewCustomer
+      security:
+      - OpenId: [exitus/customer.write, exitus/customer.admin]
       tags:
       - customer
       requestBody:
@@ -42,6 +56,8 @@ paths:
       summary: "Get a list of customers."
       operationId: Customers
       description: "Return a list of customers."
+      security:
+      - OpenId: [exitus/customer.read, exitus/customer.admin]
       tags:
       - customer
       parameters:
@@ -61,6 +77,8 @@ paths:
     get:
       operationId: GetCustomer
       description: Returns a customer based on it's identifier.
+      security:
+      - OpenId: [exitus/customer.read, exitus/customer.admin]
       tags:
       - customer
       parameters:
@@ -83,6 +101,8 @@ paths:
       summary: "Update a customer."
       operationId: UpdateCustomer
       description: "Update and return a customer."
+      security:
+      - OpenId: [exitus/customer.write, customers.admin]
       tags:
       - customer
       parameters:
@@ -112,6 +132,8 @@ paths:
       summary: "Create a project."
       operationId: NewProject
       description: "Create and return a new project."
+      security:
+      - OpenId: [exitus/project.write]
       tags:
       - project
       requestBody:
@@ -133,6 +155,8 @@ paths:
       summary: "Get a list of projects."
       description: "Return a list of projects."
       operationId: Projects
+      security:
+      - OpenId: [exitus/project.read]
       tags:
       - project
       parameters:
@@ -153,6 +177,8 @@ paths:
       summary: "Get a project."
       operationId: GetProject
       description: Returns a project based on it's identifier.
+      security:
+      - OpenId: [exitus/project.read]
       tags:
       - project
       parameters:
@@ -173,6 +199,8 @@ paths:
       summary: "Update a project."
       operationId: UpdateProject
       description: "Update and return a project."
+      security:
+      - OpenId: [exitus/project.write]
       tags:
       - project
       parameters:
@@ -202,6 +230,8 @@ paths:
       summary: "Create a issue."
       operationId: NewIssue
       description: "Create and return a new issue."
+      security:
+      - OpenId: [exitus/issue.write]
       tags:
       - issue
       parameters:
@@ -230,6 +260,8 @@ paths:
       summary: "Get a list of issues."
       operationId: Issues
       description: Return a list of issues.
+      security:
+      - OpenId: [exitus/issue.read]
       tags:
       - issue
       parameters:
@@ -255,6 +287,8 @@ paths:
     get:
       operationId: GetIssue
       description: Returns a issue based on it's identifier.
+      security:
+      - OpenId: [exitus/issue.read]
       tags:
       - issue
       parameters:
@@ -280,6 +314,8 @@ paths:
     put:
       operationId: UpdateIssue
       description: Update an issue based on it's identifier.
+      security:
+      - OpenId: [exitus/issue.write]
       tags:
       - issue
       parameters:
@@ -307,6 +343,8 @@ paths:
       summary: "Create a comment on a issue."
       operationId: NewComment
       description: Create and return a new comment.
+      security:
+      - OpenId: [exitus/comment.write]
       tags:
       - comment
       parameters:
@@ -341,6 +379,8 @@ paths:
       summary: "Get a list of Comments."
       operationId: Comments
       description: Returns a list of comments.
+      security:
+      - OpenId: [exitus/comment.read]
       tags:
       - comment
       parameters:
@@ -372,6 +412,8 @@ paths:
     get:
       operationId: GetComment
       description: Returns a comment based on it's identifier.
+      security:
+      - OpenId: [exitus/comment.read]
       tags:
       - comment
       parameters:
@@ -404,6 +446,8 @@ paths:
     put:
       operationId: UpdateComment
       description: Updates a comment based on it's identifier.
+      security:
+      - OpenId: [exitus/comment.write]
       tags:
       - comment
       parameters:
@@ -437,6 +481,8 @@ paths:
       summary: "Get a list of users."
       operationId: Users
       description: Return a list of users.
+      security:
+      - OpenId: [exitus/user.read]
       tags:
       - user
       parameters:
@@ -456,6 +502,8 @@ paths:
     get:
       operationId: GetUser
       description: Returns a user based on identifier.
+      security:
+      - OpenId: [exitus/user.read]
       tags:
       - user
       parameters:
@@ -473,6 +521,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
 components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations
   parameters:
     q:
       name: q

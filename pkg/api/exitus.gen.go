@@ -235,7 +235,7 @@ type ServerInterface interface {
 	Projects(ctx echo.Context, params ProjectsParams) error
 	// Create a project.// (POST /projects)
 	NewProject(ctx echo.Context) error
-	// (GET /projects/{id})
+	// Get a project.// (GET /projects/{id})
 	GetProject(ctx echo.Context, id string) error
 	// Update a project.// (PUT /projects/{id})
 	UpdateProject(ctx echo.Context, id string) error
@@ -267,6 +267,10 @@ type ServerInterfaceWrapper struct {
 // Customers converts echo context to params.
 func (w *ServerInterfaceWrapper) Customers(ctx echo.Context) error {
 	var err error
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/customer.read", "exitus/customer.admin"})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params CustomersParams
@@ -306,6 +310,10 @@ func (w *ServerInterfaceWrapper) Customers(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) NewCustomer(ctx echo.Context) error {
 	var err error
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/customer.write", "exitus/customer.admin"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.NewCustomer(ctx)
 	return err
@@ -321,6 +329,10 @@ func (w *ServerInterfaceWrapper) GetCustomer(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/customer.read", "exitus/customer.admin"})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetCustomer(ctx, id)
@@ -338,6 +350,10 @@ func (w *ServerInterfaceWrapper) UpdateCustomer(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/customer.write", "customers.admin"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateCustomer(ctx, id)
 	return err
@@ -346,6 +362,10 @@ func (w *ServerInterfaceWrapper) UpdateCustomer(ctx echo.Context) error {
 // Projects converts echo context to params.
 func (w *ServerInterfaceWrapper) Projects(ctx echo.Context) error {
 	var err error
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/project.read"})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params ProjectsParams
@@ -385,6 +405,10 @@ func (w *ServerInterfaceWrapper) Projects(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) NewProject(ctx echo.Context) error {
 	var err error
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/project.write"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.NewProject(ctx)
 	return err
@@ -400,6 +424,10 @@ func (w *ServerInterfaceWrapper) GetProject(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/project.read"})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetProject(ctx, id)
@@ -417,6 +445,10 @@ func (w *ServerInterfaceWrapper) UpdateProject(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/project.write"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateProject(ctx, id)
 	return err
@@ -432,6 +464,10 @@ func (w *ServerInterfaceWrapper) Issues(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
 	}
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/issue.read"})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params IssuesParams
@@ -478,6 +514,10 @@ func (w *ServerInterfaceWrapper) NewIssue(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter project_id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/issue.write"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.NewIssue(ctx, projectId)
 	return err
@@ -501,6 +541,10 @@ func (w *ServerInterfaceWrapper) GetIssue(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/issue.read"})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetIssue(ctx, projectId, id)
@@ -526,6 +570,10 @@ func (w *ServerInterfaceWrapper) UpdateIssue(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/issue.write"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateIssue(ctx, projectId, id)
 	return err
@@ -549,6 +597,10 @@ func (w *ServerInterfaceWrapper) Comments(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter issue_id: %s", err))
 	}
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/comment.read"})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params CommentsParams
@@ -603,6 +655,10 @@ func (w *ServerInterfaceWrapper) NewComment(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter issue_id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/comment.write"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.NewComment(ctx, projectId, issueId)
 	return err
@@ -635,6 +691,10 @@ func (w *ServerInterfaceWrapper) UpdateComment(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/comment.write"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateComment(ctx, projectId, issueId, id)
 	return err
@@ -643,6 +703,10 @@ func (w *ServerInterfaceWrapper) UpdateComment(ctx echo.Context) error {
 // Users converts echo context to params.
 func (w *ServerInterfaceWrapper) Users(ctx echo.Context) error {
 	var err error
+
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/user.read"})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params UsersParams
@@ -689,6 +753,10 @@ func (w *ServerInterfaceWrapper) GetUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
 	}
 
+	// HasSecurity is set
+
+	ctx.Set("OpenId.Scopes", []string{"exitus/user.read"})
+
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetUser(ctx, id)
 	return err
@@ -722,42 +790,49 @@ func RegisterHandlers(router runtime.EchoRouter, si ServerInterface) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"TT0AAA==",
+	"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",
+	"ppCUsf7SxTSHN5eb/wQAAP//E1OWH7tIAAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

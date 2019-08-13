@@ -9,6 +9,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/api"
 	"github.com/wolfeidau/exitus/pkg/conf"
 	"github.com/wolfeidau/exitus/pkg/db"
+	"github.com/wolfeidau/exitus/pkg/metrics"
 	"github.com/wolfeidau/exitus/pkg/middleware"
 	"github.com/wolfeidau/exitus/pkg/server"
 	"github.com/wolfeidau/exitus/pkg/store"
@@ -22,10 +23,17 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to load config")
 	}
 
+	// configure metrics writer
+	mr := metrics.New(cfg)
+	go mr.Start()
+
 	dbconn, err := db.NewDB(cfg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to connect to db")
 	}
+
+	dbm := metrics.NewDBMonitor(dbconn)
+	go dbm.Start()
 
 	stores, err := store.New(dbconn, cfg)
 	if err != nil {
@@ -48,6 +56,10 @@ func main() {
 	g.Use(middleware.RequestID)
 	g.Use(middleware.ErrorLog)
 	g.Use(middleware.RequestLog)
+	g.Use(middleware.JWTWithConfig(&middleware.JWTConfig{
+		ProviderURL: cfg.OpenIDProvider,
+		ClientID:    cfg.ClientID,
+	}))
 
 	api.RegisterHandlers(g, svr)
 

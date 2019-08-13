@@ -19,11 +19,15 @@ var (
 
 // Config for the environment
 type Config struct {
-	Debug        bool   `envconfig:"DEBUG"`
-	Addr         string `envconfig:"ADDR" default:":8080"`
-	Stage        string `envconfig:"STAGE" default:"dev"`
-	Branch       string `envconfig:"BRANCH"`
-	PGDatasource string `envconfig:"PGDATASOURCE"`
+	Debug                bool   `envconfig:"DEBUG"`
+	Addr                 string `envconfig:"ADDR" default:":8080"`
+	Stage                string `envconfig:"STAGE" default:"dev"`
+	Branch               string `envconfig:"BRANCH"`
+	PGDatasource         string `envconfig:"PGDATASOURCE"`
+	OpenIDProvider       string `envconfig:"OPENID_PROVIDER_URL"`
+	ClientID             string `envconfig:"OAUTH_CLIENT_ID"`
+	ClientSecret         string `envconfig:"OAUTH_CLIENT_SECRET"`
+	MetricsWriteInterval int    `envconfig:"METRICS_WRITE_INTERVAL"`
 }
 
 func (cfg *Config) validate() error {

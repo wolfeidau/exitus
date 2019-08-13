@@ -1,6 +1,6 @@
 {
   "go.formatTool": "goreturns",
   "go.alternateTools": {
-    "goreturns": "gofumpt"
+    " goreturns": "gofumpt"
   }
 }

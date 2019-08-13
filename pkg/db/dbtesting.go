@@ -49,13 +49,14 @@ func emptyDBPreserveSchema(t testing.TB, d *sql.DB) {
 	var tables []string
 	for rows.Next() {
 		var table string
-		rows.Scan(&table)
+		err = rows.Scan(&table)
+		t.Fatal(err)
 		tables = append(tables, table)
 	}
-	if err := rows.Close(); err != nil {
+	if err = rows.Close(); err != nil {
 		t.Fatal(err)
 	}
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		t.Fatal(err)
 	}
 	if testing.Verbose() {

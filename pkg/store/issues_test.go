@@ -54,6 +54,9 @@ func TestIssues_CreateGetUpdate(t *testing.T) {
 			Labels:  []string{"test", "updated"},
 		},
 	}, newIssue.Id, testProjectId, testCustomerId)
+	if err != nil {
+		t.Fatal("failed to update issue by id")
+	}
 
 	assert.Equal("updated test issue", newIssue.Subject)
 
