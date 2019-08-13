@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	"github.com/wolfeidau/exitus/pkg/api"
+	"github.com/wolfeidau/exitus/pkg/auth"
 	"github.com/wolfeidau/exitus/pkg/conf"
 	"github.com/wolfeidau/exitus/pkg/store"
 )
@@ -34,6 +35,15 @@ func NewServer(cfg *conf.Config, stores *store.Stores) (*Server, error) {
 
 // Customers Get a list of customers. (GET /customers)
 func (sv *Server) Customers(ctx echo.Context, params api.CustomersParams) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	query, limit, offset := listArgs(params.Q, params.Limit, params.Offset)
 	log.Info().Str("query", query).Int("offset", offset).Int("limit", limit).Msg("ProjectsListOptions")
 
@@ -49,6 +59,15 @@ func (sv *Server) Customers(ctx echo.Context, params api.CustomersParams) error 
 
 // NewCustomer Create a customer. (POST /customers)
 func (sv *Server) NewCustomer(ctx echo.Context) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	newCust := new(api.NewCustomer)
 	if err := ctx.Bind(newCust); err != nil {
 		return err
@@ -68,6 +87,14 @@ func (sv *Server) NewCustomer(ctx echo.Context) error {
 // GetCustomer (GET /customers/{id})
 func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
 
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	resCust, err := sv.stores.Customers.GetByID(ctx.Request().Context(), id)
 	if err != nil {
 		if _, ok := err.(*store.CustomerNotFoundError); ok {
@@ -81,6 +108,15 @@ func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
 
 // UpdateCustomer Update a customer. (PUT /customers/{id})
 func (sv *Server) UpdateCustomer(ctx echo.Context, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	upCust := new(api.UpdatedCustomer)
 	if err := ctx.Bind(upCust); err != nil {
 		return err
@@ -97,6 +133,14 @@ func (sv *Server) UpdateCustomer(ctx echo.Context, id string) error {
 // Projects Get a list of projects. (GET /projects)
 func (sv *Server) Projects(ctx echo.Context, params api.ProjectsParams) error {
 
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	query, limit, offset := listArgs(params.Q, params.Limit, params.Offset)
 	log.Info().Str("query", query).Int("offset", offset).Int("limit", limit).Msg("ProjectsListOptions")
 
@@ -112,6 +156,14 @@ func (sv *Server) Projects(ctx echo.Context, params api.ProjectsParams) error {
 
 // NewProject Create a project. (POST /projects)
 func (sv *Server) NewProject(ctx echo.Context) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
 
 	newProj := new(api.NewProject)
 	if err := ctx.Bind(newProj); err != nil {
@@ -132,6 +184,14 @@ func (sv *Server) NewProject(ctx echo.Context) error {
 // GetProject (GET /projects/{id})
 func (sv *Server) GetProject(ctx echo.Context, id string) error {
 
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	resProj, err := sv.stores.Projects.GetByID(ctx.Request().Context(), id, DefaultCustomerID)
 	if err != nil {
 		if _, ok := err.(*store.ProjectNotFoundError); ok {
@@ -145,6 +205,15 @@ func (sv *Server) GetProject(ctx echo.Context, id string) error {
 
 // UpdateProject Update a project. (PUT /projects/{id})
 func (sv *Server) UpdateProject(ctx echo.Context, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	upProj := new(api.UpdatedProject)
 	if err := ctx.Bind(upProj); err != nil {
 		return err
@@ -160,6 +229,15 @@ func (sv *Server) UpdateProject(ctx echo.Context, id string) error {
 
 // Issues Get a list of issues. (GET /projects/{project_id}/issues)
 func (sv *Server) Issues(ctx echo.Context, projectId string, params api.IssuesParams) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	query, limit, offset := listArgs(params.Q, params.Limit, params.Offset)
 	log.Info().Str("query", query).Int("offset", offset).Int("limit", limit).Msg("IssuesListOptions")
 
@@ -175,6 +253,15 @@ func (sv *Server) Issues(ctx echo.Context, projectId string, params api.IssuesPa
 
 // NewIssue Create a issue. (POST /projects/{project_id}/issues)
 func (sv *Server) NewIssue(ctx echo.Context, projectId string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	newIssue := new(api.NewIssue)
 	if err := ctx.Bind(newIssue); err != nil {
 		return err
@@ -190,6 +277,15 @@ func (sv *Server) NewIssue(ctx echo.Context, projectId string) error {
 
 // UpdateIssue (PUT /projects/{project_id}/issues/{id})
 func (sv *Server) UpdateIssue(ctx echo.Context, projectId string, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	upIssue := new(api.UpdatedIssue)
 	if err := ctx.Bind(upIssue); err != nil {
 		return err
@@ -205,6 +301,15 @@ func (sv *Server) UpdateIssue(ctx echo.Context, projectId string, id string) err
 
 // GetIssue (GET /projects/{project_id}/issues/{id})
 func (sv *Server) GetIssue(ctx echo.Context, projectId string, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	resIssue, err := sv.stores.Issues.GetByID(ctx.Request().Context(), id, projectId, DefaultCustomerID)
 	if err != nil {
 		if _, ok := err.(*store.IssueNotFoundError); ok {
@@ -218,6 +323,15 @@ func (sv *Server) GetIssue(ctx echo.Context, projectId string, id string) error 
 
 // Comments Get a list of Comments. (GET /projects/{project_id}/issues/{issue_id}/comments)
 func (sv *Server) Comments(ctx echo.Context, projectId string, issueId string, params api.CommentsParams) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	query, limit, offset := listArgs(params.Q, params.Limit, params.Offset)
 	log.Info().Str("query", query).Int("offset", offset).Int("limit", limit).Msg("CommentsListOptions")
 
@@ -233,6 +347,15 @@ func (sv *Server) Comments(ctx echo.Context, projectId string, issueId string, p
 
 // NewComment Create a comment on a issue. (POST /projects/{project_id}/issues/{issue_id}/comments)
 func (sv *Server) NewComment(ctx echo.Context, projectId string, issueId string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	newComment := new(api.NewComment)
 	if err := ctx.Bind(newComment); err != nil {
 		return err
@@ -248,6 +371,15 @@ func (sv *Server) NewComment(ctx echo.Context, projectId string, issueId string)
 
 // UpdateComment (PUT /projects/{project_id}/issues/{issue_id}/comments/{id})
 func (sv *Server) UpdateComment(ctx echo.Context, projectId string, issueId string, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	upComment := new(api.UpdatedComment)
 	if err := ctx.Bind(upComment); err != nil {
 		return err
@@ -263,6 +395,15 @@ func (sv *Server) UpdateComment(ctx echo.Context, projectId string, issueId stri
 
 // GetComment (GET /projects/{project_id}/issues/{issue_id}/comments/{id})
 func (sv *Server) GetComment(ctx echo.Context, projectId string, issueId string, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	resComment, err := sv.stores.Comments.GetByID(ctx.Request().Context(), id, issueId, projectId, DefaultCustomerID)
 	if err != nil {
 		if _, ok := err.(*store.CommentNotFoundError); ok {
@@ -276,10 +417,47 @@ func (sv *Server) GetComment(ctx echo.Context, projectId string, issueId string,
 
 // Users Get a list of users. (GET /users)
 func (sv *Server) Users(ctx echo.Context, params api.UsersParams) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
 // GetUser (GET /users/{id})
 func (sv *Server) GetUser(ctx echo.Context, id string) error {
+
+	// Validate access token.
+	//
+	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
+	// is allowed to do.
+	if !userHasAccess(ctx) {
+		return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
+	}
+
 	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
+}
+
+func userHasAccess(ctx echo.Context) bool {
+
+	user, err := auth.LoadUserFromContext(ctx)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to load user from context")
+		return false
+	}
+
+	scopes, err := auth.LoadOperationScopesFromContext(ctx, auth.OpenIDScopes)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to load scopes from context")
+		return false
+	}
+
+	log.Info().Strs("Scopes", scopes).Object("User", &user).Msg("Scopes check")
+
+	return user.HasScope(scopes)
 }

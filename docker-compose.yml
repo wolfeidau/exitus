@@ -18,6 +18,9 @@ services:
       build: .
       command: ["go", "run", "cmd/backend/main.go"]
       environment:
+        - OAUTH_CLIENT_ID
+        - OAUTH_CLIENT_SECRET
+        - OPENID_PROVIDER_URL
         - LOGLEVEL=DEBUG
         - PGDATASOURCE=postgres://backend:${POSTGRES_PASSWORD}@postgres/backend?sslmode=disable
         - ADDR=:8080

@@ -49,12 +49,15 @@ func TestCustomers_CreateGetUpdateList(t *testing.T) {
 			Labels: []string{"test", "update"},
 		},
 	}, getCust.Id)
+	if err != nil {
+		t.Fatal("failed to update customer by id")
+	}
 
 	assert.Equal("updated test customer", newCust.Name)
 
 	listCust, err := cstore.List(ctx, store.NewCustomersListOptions("test", 0, 100))
 	if err != nil {
-		t.Fatal("failed to get customer by id")
+		t.Fatal("failed to list customers")
 	}
 
 	assert.Len(listCust, 1)

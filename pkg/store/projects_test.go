@@ -51,12 +51,15 @@ func TestProjects_CreateGetUpdate(t *testing.T) {
 			Labels: []string{"test", "update"},
 		},
 	}, newProj.Id, testCustomerId)
+	if err != nil {
+		t.Fatal("failed to update project by id")
+	}
 
 	assert.Equal("updated test project", newProj.Name)
 
 	listProj, err := pstore.List(ctx, store.NewProjectsListOptions("test", 0, 100), testCustomerId)
 	if err != nil {
-		t.Fatal("failed to get project by id")
+		t.Fatal("failed to list projects")
 	}
 
 	assert.Len(listProj, 1)
