@@ -6,8 +6,12 @@ package api
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -220,6 +224,2076 @@ type NewIssueJSONRequestBody NewIssue
 
 // NewCommentRequestBody defines body for NewComment for application/json ContentType.
 type NewCommentJSONRequestBody NewComment
+
+// RequestEditorFn  is the function signature for the RequestEditor callback function
+type RequestEditorFn func(req *http.Request, ctx context.Context) error
+
+// Client which conforms to the OpenAPI3 specification for this service.
+type Client struct {
+	// The endpoint of the server conforming to this interface, with scheme,
+	// https://api.deepmap.com for example.
+	Server string
+
+	// HTTP client with any customized settings, such as certificate chains.
+	Client http.Client
+
+	// A callback for modifying requests which are generated before sending over
+	// the network.
+	RequestEditor RequestEditorFn
+}
+
+// The interface specification for the client above.
+type ClientInterface interface {
+	// Customers request
+	Customers(ctx context.Context, params *CustomersParams) (*http.Response, error)
+
+	// NewCustomer request  with any body
+	NewCustomerWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	NewCustomer(ctx context.Context, body NewCustomer) (*http.Response, error)
+
+	// GetCustomer request
+	GetCustomer(ctx context.Context, id string) (*http.Response, error)
+
+	// UpdateCustomer request  with any body
+	UpdateCustomerWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
+
+	UpdateCustomer(ctx context.Context, id string, body UpdatedCustomer) (*http.Response, error)
+
+	// Projects request
+	Projects(ctx context.Context, params *ProjectsParams) (*http.Response, error)
+
+	// NewProject request  with any body
+	NewProjectWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	NewProject(ctx context.Context, body NewProject) (*http.Response, error)
+
+	// GetProject request
+	GetProject(ctx context.Context, id string) (*http.Response, error)
+
+	// UpdateProject request  with any body
+	UpdateProjectWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
+
+	UpdateProject(ctx context.Context, id string, body UpdatedProject) (*http.Response, error)
+
+	// Issues request
+	Issues(ctx context.Context, projectId string, params *IssuesParams) (*http.Response, error)
+
+	// NewIssue request  with any body
+	NewIssueWithBody(ctx context.Context, projectId string, contentType string, body io.Reader) (*http.Response, error)
+
+	NewIssue(ctx context.Context, projectId string, body NewIssue) (*http.Response, error)
+
+	// GetIssue request
+	GetIssue(ctx context.Context, projectId string, id string) (*http.Response, error)
+
+	// UpdateIssue request
+	UpdateIssue(ctx context.Context, projectId string, id string) (*http.Response, error)
+
+	// Comments request
+	Comments(ctx context.Context, projectId string, issueId string, params *CommentsParams) (*http.Response, error)
+
+	// NewComment request  with any body
+	NewCommentWithBody(ctx context.Context, projectId string, issueId string, contentType string, body io.Reader) (*http.Response, error)
+
+	NewComment(ctx context.Context, projectId string, issueId string, body NewComment) (*http.Response, error)
+
+	// UpdateComment request
+	UpdateComment(ctx context.Context, projectId string, issueId string, id string) (*http.Response, error)
+
+	// Users request
+	Users(ctx context.Context, params *UsersParams) (*http.Response, error)
+
+	// GetUser request
+	GetUser(ctx context.Context, id string) (*http.Response, error)
+}
+
+func (c *Client) Customers(ctx context.Context, params *CustomersParams) (*http.Response, error) {
+	req, err := NewCustomersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewCustomerWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewNewCustomerRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewCustomer(ctx context.Context, body NewCustomer) (*http.Response, error) {
+	req, err := NewNewCustomerRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetCustomer(ctx context.Context, id string) (*http.Response, error) {
+	req, err := NewGetCustomerRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCustomerWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewUpdateCustomerRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateCustomer(ctx context.Context, id string, body UpdatedCustomer) (*http.Response, error) {
+	req, err := NewUpdateCustomerRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Projects(ctx context.Context, params *ProjectsParams) (*http.Response, error) {
+	req, err := NewProjectsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewProjectWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewNewProjectRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewProject(ctx context.Context, body NewProject) (*http.Response, error) {
+	req, err := NewNewProjectRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetProject(ctx context.Context, id string) (*http.Response, error) {
+	req, err := NewGetProjectRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateProjectWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewUpdateProjectRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateProject(ctx context.Context, id string, body UpdatedProject) (*http.Response, error) {
+	req, err := NewUpdateProjectRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Issues(ctx context.Context, projectId string, params *IssuesParams) (*http.Response, error) {
+	req, err := NewIssuesRequest(c.Server, projectId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewIssueWithBody(ctx context.Context, projectId string, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewNewIssueRequestWithBody(c.Server, projectId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewIssue(ctx context.Context, projectId string, body NewIssue) (*http.Response, error) {
+	req, err := NewNewIssueRequest(c.Server, projectId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetIssue(ctx context.Context, projectId string, id string) (*http.Response, error) {
+	req, err := NewGetIssueRequest(c.Server, projectId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateIssue(ctx context.Context, projectId string, id string) (*http.Response, error) {
+	req, err := NewUpdateIssueRequest(c.Server, projectId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Comments(ctx context.Context, projectId string, issueId string, params *CommentsParams) (*http.Response, error) {
+	req, err := NewCommentsRequest(c.Server, projectId, issueId, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewCommentWithBody(ctx context.Context, projectId string, issueId string, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewNewCommentRequestWithBody(c.Server, projectId, issueId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) NewComment(ctx context.Context, projectId string, issueId string, body NewComment) (*http.Response, error) {
+	req, err := NewNewCommentRequest(c.Server, projectId, issueId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateComment(ctx context.Context, projectId string, issueId string, id string) (*http.Response, error) {
+	req, err := NewUpdateCommentRequest(c.Server, projectId, issueId, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Users(ctx context.Context, params *UsersParams) (*http.Response, error) {
+	req, err := NewUsersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetUser(ctx context.Context, id string) (*http.Response, error) {
+	req, err := NewGetUserRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(req, ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+// NewCustomersRequest generates requests for Customers
+func NewCustomersRequest(server string, params *CustomersParams) (*http.Request, error) {
+	var err error
+
+	queryUrl := fmt.Sprintf("%s/customers", server)
+
+	var queryStrings []string
+
+	var queryParam0 string
+	if params.Q != nil {
+
+		queryParam0, err = runtime.StyleParam("form", true, "q", *params.Q)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam0)
+	}
+
+	var queryParam1 string
+	if params.Offset != nil {
+
+		queryParam1, err = runtime.StyleParam("form", true, "offset", *params.Offset)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam1)
+	}
+
+	var queryParam2 string
+	if params.Limit != nil {
+
+		queryParam2, err = runtime.StyleParam("form", true, "limit", *params.Limit)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam2)
+	}
+
+	if len(queryStrings) != 0 {
+		queryUrl += "?" + strings.Join(queryStrings, "&")
+	}
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewNewCustomerRequest calls the generic NewCustomer builder with application/json body
+func NewNewCustomerRequest(server string, body NewCustomer) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewNewCustomerRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewNewCustomerRequestWithBody generates requests for NewCustomer with any type of body
+func NewNewCustomerRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl := fmt.Sprintf("%s/customers", server)
+
+	req, err := http.NewRequest("POST", queryUrl, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewGetCustomerRequest generates requests for GetCustomer
+func NewGetCustomerRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/customers/%s", server, pathParam0)
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateCustomerRequest calls the generic UpdateCustomer builder with application/json body
+func NewUpdateCustomerRequest(server string, id string, body UpdatedCustomer) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateCustomerRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateCustomerRequestWithBody generates requests for UpdateCustomer with any type of body
+func NewUpdateCustomerRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/customers/%s", server, pathParam0)
+
+	req, err := http.NewRequest("PUT", queryUrl, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewProjectsRequest generates requests for Projects
+func NewProjectsRequest(server string, params *ProjectsParams) (*http.Request, error) {
+	var err error
+
+	queryUrl := fmt.Sprintf("%s/projects", server)
+
+	var queryStrings []string
+
+	var queryParam0 string
+	if params.Q != nil {
+
+		queryParam0, err = runtime.StyleParam("form", true, "q", *params.Q)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam0)
+	}
+
+	var queryParam1 string
+	if params.Offset != nil {
+
+		queryParam1, err = runtime.StyleParam("form", true, "offset", *params.Offset)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam1)
+	}
+
+	var queryParam2 string
+	if params.Limit != nil {
+
+		queryParam2, err = runtime.StyleParam("form", true, "limit", *params.Limit)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam2)
+	}
+
+	if len(queryStrings) != 0 {
+		queryUrl += "?" + strings.Join(queryStrings, "&")
+	}
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewNewProjectRequest calls the generic NewProject builder with application/json body
+func NewNewProjectRequest(server string, body NewProject) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewNewProjectRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewNewProjectRequestWithBody generates requests for NewProject with any type of body
+func NewNewProjectRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl := fmt.Sprintf("%s/projects", server)
+
+	req, err := http.NewRequest("POST", queryUrl, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewGetProjectRequest generates requests for GetProject
+func NewGetProjectRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s", server, pathParam0)
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateProjectRequest calls the generic UpdateProject builder with application/json body
+func NewUpdateProjectRequest(server string, id string, body UpdatedProject) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateProjectRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewUpdateProjectRequestWithBody generates requests for UpdateProject with any type of body
+func NewUpdateProjectRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s", server, pathParam0)
+
+	req, err := http.NewRequest("PUT", queryUrl, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewIssuesRequest generates requests for Issues
+func NewIssuesRequest(server string, projectId string, params *IssuesParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues", server, pathParam0)
+
+	var queryStrings []string
+
+	var queryParam0 string
+	if params.Q != nil {
+
+		queryParam0, err = runtime.StyleParam("form", true, "q", *params.Q)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam0)
+	}
+
+	var queryParam1 string
+	if params.Offset != nil {
+
+		queryParam1, err = runtime.StyleParam("form", true, "offset", *params.Offset)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam1)
+	}
+
+	var queryParam2 string
+	if params.Limit != nil {
+
+		queryParam2, err = runtime.StyleParam("form", true, "limit", *params.Limit)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam2)
+	}
+
+	if len(queryStrings) != 0 {
+		queryUrl += "?" + strings.Join(queryStrings, "&")
+	}
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewNewIssueRequest calls the generic NewIssue builder with application/json body
+func NewNewIssueRequest(server string, projectId string, body NewIssue) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewNewIssueRequestWithBody(server, projectId, "application/json", bodyReader)
+}
+
+// NewNewIssueRequestWithBody generates requests for NewIssue with any type of body
+func NewNewIssueRequestWithBody(server string, projectId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues", server, pathParam0)
+
+	req, err := http.NewRequest("POST", queryUrl, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewGetIssueRequest generates requests for GetIssue
+func NewGetIssueRequest(server string, projectId string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues/%s", server, pathParam0, pathParam1)
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateIssueRequest generates requests for UpdateIssue
+func NewUpdateIssueRequest(server string, projectId string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues/%s", server, pathParam0, pathParam1)
+
+	req, err := http.NewRequest("PUT", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCommentsRequest generates requests for Comments
+func NewCommentsRequest(server string, projectId string, issueId string, params *CommentsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParam("simple", false, "issue_id", issueId)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues/%s/comments", server, pathParam0, pathParam1)
+
+	var queryStrings []string
+
+	var queryParam0 string
+	if params.Q != nil {
+
+		queryParam0, err = runtime.StyleParam("form", true, "q", *params.Q)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam0)
+	}
+
+	var queryParam1 string
+	if params.Offset != nil {
+
+		queryParam1, err = runtime.StyleParam("form", true, "offset", *params.Offset)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam1)
+	}
+
+	var queryParam2 string
+	if params.Limit != nil {
+
+		queryParam2, err = runtime.StyleParam("form", true, "limit", *params.Limit)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam2)
+	}
+
+	if len(queryStrings) != 0 {
+		queryUrl += "?" + strings.Join(queryStrings, "&")
+	}
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewNewCommentRequest calls the generic NewComment builder with application/json body
+func NewNewCommentRequest(server string, projectId string, issueId string, body NewComment) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewNewCommentRequestWithBody(server, projectId, issueId, "application/json", bodyReader)
+}
+
+// NewNewCommentRequestWithBody generates requests for NewComment with any type of body
+func NewNewCommentRequestWithBody(server string, projectId string, issueId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParam("simple", false, "issue_id", issueId)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues/%s/comments", server, pathParam0, pathParam1)
+
+	req, err := http.NewRequest("POST", queryUrl, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewUpdateCommentRequest generates requests for UpdateComment
+func NewUpdateCommentRequest(server string, projectId string, issueId string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "project_id", projectId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParam("simple", false, "issue_id", issueId)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/projects/%s/issues/%s/comments/%s", server, pathParam0, pathParam1, pathParam2)
+
+	req, err := http.NewRequest("PUT", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUsersRequest generates requests for Users
+func NewUsersRequest(server string, params *UsersParams) (*http.Request, error) {
+	var err error
+
+	queryUrl := fmt.Sprintf("%s/users", server)
+
+	var queryStrings []string
+
+	var queryParam0 string
+	if params.Q != nil {
+
+		queryParam0, err = runtime.StyleParam("form", true, "q", *params.Q)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam0)
+	}
+
+	var queryParam1 string
+	if params.Offset != nil {
+
+		queryParam1, err = runtime.StyleParam("form", true, "offset", *params.Offset)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam1)
+	}
+
+	var queryParam2 string
+	if params.Limit != nil {
+
+		queryParam2, err = runtime.StyleParam("form", true, "limit", *params.Limit)
+		if err != nil {
+			return nil, err
+		}
+
+		queryStrings = append(queryStrings, queryParam2)
+	}
+
+	if len(queryStrings) != 0 {
+		queryUrl += "?" + strings.Join(queryStrings, "&")
+	}
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetUserRequest generates requests for GetUser
+func NewGetUserRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl := fmt.Sprintf("%s/users/%s", server, pathParam0)
+
+	req, err := http.NewRequest("GET", queryUrl, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// ClientWithResponses builds on ClientInterface to offer response payloads
+type ClientWithResponses struct {
+	ClientInterface
+}
+
+// NewClientWithResponses returns a ClientWithResponses with a default Client:
+func NewClientWithResponses(server string) *ClientWithResponses {
+	return &ClientWithResponses{
+		ClientInterface: &Client{
+			Client: http.Client{},
+			Server: server,
+		},
+	}
+}
+
+// NewClientWithResponsesAndRequestEditorFunc takes in a RequestEditorFn callback function and returns a ClientWithResponses with a default Client:
+func NewClientWithResponsesAndRequestEditorFunc(server string, reqEditorFn RequestEditorFn) *ClientWithResponses {
+	return &ClientWithResponses{
+		ClientInterface: &Client{
+			Client:        http.Client{},
+			Server:        server,
+			RequestEditor: reqEditorFn,
+		},
+	}
+}
+
+type customersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]CustomersPage
+}
+
+// Status returns HTTPResponse.Status
+func (r customersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r customersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type newCustomerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Customer
+}
+
+// Status returns HTTPResponse.Status
+func (r newCustomerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r newCustomerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type getCustomerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Customer
+}
+
+// Status returns HTTPResponse.Status
+func (r getCustomerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r getCustomerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type updateCustomerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Customer
+}
+
+// Status returns HTTPResponse.Status
+func (r updateCustomerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r updateCustomerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type projectsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ProjectsPage
+}
+
+// Status returns HTTPResponse.Status
+func (r projectsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r projectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type newProjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Project
+}
+
+// Status returns HTTPResponse.Status
+func (r newProjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r newProjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type getProjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Project
+}
+
+// Status returns HTTPResponse.Status
+func (r getProjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r getProjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type updateProjectResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Project
+}
+
+// Status returns HTTPResponse.Status
+func (r updateProjectResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r updateProjectResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type issuesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]IssuesPage
+}
+
+// Status returns HTTPResponse.Status
+func (r issuesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r issuesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type newIssueResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Issue
+}
+
+// Status returns HTTPResponse.Status
+func (r newIssueResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r newIssueResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type getIssueResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Issue
+}
+
+// Status returns HTTPResponse.Status
+func (r getIssueResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r getIssueResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type updateIssueResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UpdatedIssue
+}
+
+// Status returns HTTPResponse.Status
+func (r updateIssueResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r updateIssueResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type commentsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]CommentsPage
+}
+
+// Status returns HTTPResponse.Status
+func (r commentsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r commentsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type newCommentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON201      *[]Comment
+}
+
+// Status returns HTTPResponse.Status
+func (r newCommentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r newCommentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type updateCommentResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *UpdatedComment
+}
+
+// Status returns HTTPResponse.Status
+func (r updateCommentResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r updateCommentResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type usersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]UsersPage
+}
+
+// Status returns HTTPResponse.Status
+func (r usersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r usersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type getUserResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *User
+}
+
+// Status returns HTTPResponse.Status
+func (r getUserResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r getUserResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// CustomersWithResponse request returning *CustomersResponse
+func (c *ClientWithResponses) CustomersWithResponse(ctx context.Context, params *CustomersParams) (*customersResponse, error) {
+	rsp, err := c.Customers(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	return ParsecustomersResponse(rsp)
+}
+
+// NewCustomerWithBodyWithResponse request with arbitrary body returning *NewCustomerResponse
+func (c *ClientWithResponses) NewCustomerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*newCustomerResponse, error) {
+	rsp, err := c.NewCustomerWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewCustomerResponse(rsp)
+}
+
+func (c *ClientWithResponses) NewCustomerWithResponse(ctx context.Context, body NewCustomer) (*newCustomerResponse, error) {
+	rsp, err := c.NewCustomer(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewCustomerResponse(rsp)
+}
+
+// GetCustomerWithResponse request returning *GetCustomerResponse
+func (c *ClientWithResponses) GetCustomerWithResponse(ctx context.Context, id string) (*getCustomerResponse, error) {
+	rsp, err := c.GetCustomer(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParsegetCustomerResponse(rsp)
+}
+
+// UpdateCustomerWithBodyWithResponse request with arbitrary body returning *UpdateCustomerResponse
+func (c *ClientWithResponses) UpdateCustomerWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*updateCustomerResponse, error) {
+	rsp, err := c.UpdateCustomerWithBody(ctx, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParseupdateCustomerResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateCustomerWithResponse(ctx context.Context, id string, body UpdatedCustomer) (*updateCustomerResponse, error) {
+	rsp, err := c.UpdateCustomer(ctx, id, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParseupdateCustomerResponse(rsp)
+}
+
+// ProjectsWithResponse request returning *ProjectsResponse
+func (c *ClientWithResponses) ProjectsWithResponse(ctx context.Context, params *ProjectsParams) (*projectsResponse, error) {
+	rsp, err := c.Projects(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	return ParseprojectsResponse(rsp)
+}
+
+// NewProjectWithBodyWithResponse request with arbitrary body returning *NewProjectResponse
+func (c *ClientWithResponses) NewProjectWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*newProjectResponse, error) {
+	rsp, err := c.NewProjectWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewProjectResponse(rsp)
+}
+
+func (c *ClientWithResponses) NewProjectWithResponse(ctx context.Context, body NewProject) (*newProjectResponse, error) {
+	rsp, err := c.NewProject(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewProjectResponse(rsp)
+}
+
+// GetProjectWithResponse request returning *GetProjectResponse
+func (c *ClientWithResponses) GetProjectWithResponse(ctx context.Context, id string) (*getProjectResponse, error) {
+	rsp, err := c.GetProject(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParsegetProjectResponse(rsp)
+}
+
+// UpdateProjectWithBodyWithResponse request with arbitrary body returning *UpdateProjectResponse
+func (c *ClientWithResponses) UpdateProjectWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*updateProjectResponse, error) {
+	rsp, err := c.UpdateProjectWithBody(ctx, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParseupdateProjectResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateProjectWithResponse(ctx context.Context, id string, body UpdatedProject) (*updateProjectResponse, error) {
+	rsp, err := c.UpdateProject(ctx, id, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParseupdateProjectResponse(rsp)
+}
+
+// IssuesWithResponse request returning *IssuesResponse
+func (c *ClientWithResponses) IssuesWithResponse(ctx context.Context, projectId string, params *IssuesParams) (*issuesResponse, error) {
+	rsp, err := c.Issues(ctx, projectId, params)
+	if err != nil {
+		return nil, err
+	}
+	return ParseissuesResponse(rsp)
+}
+
+// NewIssueWithBodyWithResponse request with arbitrary body returning *NewIssueResponse
+func (c *ClientWithResponses) NewIssueWithBodyWithResponse(ctx context.Context, projectId string, contentType string, body io.Reader) (*newIssueResponse, error) {
+	rsp, err := c.NewIssueWithBody(ctx, projectId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewIssueResponse(rsp)
+}
+
+func (c *ClientWithResponses) NewIssueWithResponse(ctx context.Context, projectId string, body NewIssue) (*newIssueResponse, error) {
+	rsp, err := c.NewIssue(ctx, projectId, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewIssueResponse(rsp)
+}
+
+// GetIssueWithResponse request returning *GetIssueResponse
+func (c *ClientWithResponses) GetIssueWithResponse(ctx context.Context, projectId string, id string) (*getIssueResponse, error) {
+	rsp, err := c.GetIssue(ctx, projectId, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParsegetIssueResponse(rsp)
+}
+
+// UpdateIssueWithResponse request returning *UpdateIssueResponse
+func (c *ClientWithResponses) UpdateIssueWithResponse(ctx context.Context, projectId string, id string) (*updateIssueResponse, error) {
+	rsp, err := c.UpdateIssue(ctx, projectId, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParseupdateIssueResponse(rsp)
+}
+
+// CommentsWithResponse request returning *CommentsResponse
+func (c *ClientWithResponses) CommentsWithResponse(ctx context.Context, projectId string, issueId string, params *CommentsParams) (*commentsResponse, error) {
+	rsp, err := c.Comments(ctx, projectId, issueId, params)
+	if err != nil {
+		return nil, err
+	}
+	return ParsecommentsResponse(rsp)
+}
+
+// NewCommentWithBodyWithResponse request with arbitrary body returning *NewCommentResponse
+func (c *ClientWithResponses) NewCommentWithBodyWithResponse(ctx context.Context, projectId string, issueId string, contentType string, body io.Reader) (*newCommentResponse, error) {
+	rsp, err := c.NewCommentWithBody(ctx, projectId, issueId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewCommentResponse(rsp)
+}
+
+func (c *ClientWithResponses) NewCommentWithResponse(ctx context.Context, projectId string, issueId string, body NewComment) (*newCommentResponse, error) {
+	rsp, err := c.NewComment(ctx, projectId, issueId, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsenewCommentResponse(rsp)
+}
+
+// UpdateCommentWithResponse request returning *UpdateCommentResponse
+func (c *ClientWithResponses) UpdateCommentWithResponse(ctx context.Context, projectId string, issueId string, id string) (*updateCommentResponse, error) {
+	rsp, err := c.UpdateComment(ctx, projectId, issueId, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParseupdateCommentResponse(rsp)
+}
+
+// UsersWithResponse request returning *UsersResponse
+func (c *ClientWithResponses) UsersWithResponse(ctx context.Context, params *UsersParams) (*usersResponse, error) {
+	rsp, err := c.Users(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+	return ParseusersResponse(rsp)
+}
+
+// GetUserWithResponse request returning *GetUserResponse
+func (c *ClientWithResponses) GetUserWithResponse(ctx context.Context, id string) (*getUserResponse, error) {
+	rsp, err := c.GetUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParsegetUserResponse(rsp)
+}
+
+// ParsecustomersResponse parses an HTTP response from a CustomersWithResponse call
+func ParsecustomersResponse(rsp *http.Response) (*customersResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &customersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &[]CustomersPage{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsenewCustomerResponse parses an HTTP response from a NewCustomerWithResponse call
+func ParsenewCustomerResponse(rsp *http.Response) (*newCustomerResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &newCustomerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		response.JSON201 = &[]Customer{}
+		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsegetCustomerResponse parses an HTTP response from a GetCustomerWithResponse call
+func ParsegetCustomerResponse(rsp *http.Response) (*getCustomerResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &getCustomerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &Customer{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	case rsp.StatusCode == 404:
+		break // No content-type
+	}
+
+	return response, nil
+}
+
+// ParseupdateCustomerResponse parses an HTTP response from a UpdateCustomerWithResponse call
+func ParseupdateCustomerResponse(rsp *http.Response) (*updateCustomerResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &updateCustomerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		response.JSON201 = &[]Customer{}
+		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParseprojectsResponse parses an HTTP response from a ProjectsWithResponse call
+func ParseprojectsResponse(rsp *http.Response) (*projectsResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &projectsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &[]ProjectsPage{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsenewProjectResponse parses an HTTP response from a NewProjectWithResponse call
+func ParsenewProjectResponse(rsp *http.Response) (*newProjectResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &newProjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		response.JSON201 = &[]Project{}
+		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsegetProjectResponse parses an HTTP response from a GetProjectWithResponse call
+func ParsegetProjectResponse(rsp *http.Response) (*getProjectResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &getProjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &Project{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParseupdateProjectResponse parses an HTTP response from a UpdateProjectWithResponse call
+func ParseupdateProjectResponse(rsp *http.Response) (*updateProjectResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &updateProjectResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		response.JSON201 = &[]Project{}
+		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParseissuesResponse parses an HTTP response from a IssuesWithResponse call
+func ParseissuesResponse(rsp *http.Response) (*issuesResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &issuesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &[]IssuesPage{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsenewIssueResponse parses an HTTP response from a NewIssueWithResponse call
+func ParsenewIssueResponse(rsp *http.Response) (*newIssueResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &newIssueResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		response.JSON201 = &[]Issue{}
+		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsegetIssueResponse parses an HTTP response from a GetIssueWithResponse call
+func ParsegetIssueResponse(rsp *http.Response) (*getIssueResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &getIssueResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &Issue{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParseupdateIssueResponse parses an HTTP response from a UpdateIssueWithResponse call
+func ParseupdateIssueResponse(rsp *http.Response) (*updateIssueResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &updateIssueResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &UpdatedIssue{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsecommentsResponse parses an HTTP response from a CommentsWithResponse call
+func ParsecommentsResponse(rsp *http.Response) (*commentsResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &commentsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &[]CommentsPage{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsenewCommentResponse parses an HTTP response from a NewCommentWithResponse call
+func ParsenewCommentResponse(rsp *http.Response) (*newCommentResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &newCommentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
+		response.JSON201 = &[]Comment{}
+		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParseupdateCommentResponse parses an HTTP response from a UpdateCommentWithResponse call
+func ParseupdateCommentResponse(rsp *http.Response) (*updateCommentResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &updateCommentResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &UpdatedComment{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParseusersResponse parses an HTTP response from a UsersWithResponse call
+func ParseusersResponse(rsp *http.Response) (*usersResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &usersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &[]UsersPage{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
+// ParsegetUserResponse parses an HTTP response from a GetUserWithResponse call
+func ParsegetUserResponse(rsp *http.Response) (*getUserResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &getUserResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		response.JSON200 = &User{}
+		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {

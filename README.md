@@ -18,13 +18,44 @@ The goal of the project is to cover a few key pillars:
 4. Illustrate good test coverage across the entire service, both unit and integration.
 5. Be secure, provide standard robust authentication, authorisation and auditing facilities.
 
+# Overview
+
+## Authentication
+
+Authentication for this service is provided by an external OpenID provider such as [AWS Cognito](https://aws.amazon.com/cognito/) or [Keycloak](https://www.keycloak.org). Clients authenticate with one of these services and then provide their JWT token, which is [validated](pkg/jwt/jwt.go) by the exitus service using [go-oidc](github.com/wolfeidau/go-oidc) developed by CoreOS.
+
+## Infrastructure
+
+The exitus service uses [AWS ECS](https://aws.amazon.com/ecs/) to schedule the service, and [AWS RDS](https://aws.amazon.com/rds/) to host the PostgreSQL database. This is deployed using the recently released [AWS Cloud Development Kit](https://aws.amazon.com/cdk/), the code is [here](infra/exitus.ts).
+
+### Secrets
+
+With the help of CDK the RDS credentials are available from [AWS secrets manager](https://aws.amazon.com/secrets-manager/) using [Specifying Sensitive Data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html) feature of ECS. This is neatly wrapped by CDK, and the JSON value containing host, port, database, username and password is [unmarshalled by my service](pkg/conf/conf.go). This eleminates display of these values in the ECS console environment variables section.
+
 # Development
 
 To run the tests, and run locally you will need two environment variables, being:
 
 ```
-export POSTGRES_PASSWORD=arandomstring
-export POSTGRES_ROOT_PASSWORD=arandomstring
+# Used to connect to AWS for deployments and monitoring
+export AWS_PROFILE=whatever
+export AWS_REGION=ap-southeast-2
+
+# Nice random passwords go here to seed the passwords used by docker compose because security
+export POSTGRES_PASSWORD=xxx
+export POSTGRES_ROOT_PASSWORD=xxx
+
+# Used for development locally
+export OAUTH_CLIENT_ID=xxx
+export OAUTH_CLIENT_SECRET=xxx
+export OPENID_PROVIDER_URL=https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_XXXXXXXXXS
+
+# Used by CDK for deployment
+export STAGE=dev
+export BRANCH=master
+export DOMAIN_NAME=whatever.cloud.
+export HOSTED_ZONE_ID=XXXXXXXXXXXXX
+export ACM_CERTIFICATE_ARN=arn:aws:acm:ap-southeast-2:123456789012:certificate/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
 These vars are used in docker compose when configuring the PostgreSQL database.

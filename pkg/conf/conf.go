@@ -1,6 +1,9 @@
 package conf
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/url"
 	"os"
 
 	"github.com/kelseyhightower/envconfig"
@@ -26,8 +29,17 @@ type Config struct {
 	PGDatasource         string `envconfig:"PGDATASOURCE"`
 	OpenIDProvider       string `envconfig:"OPENID_PROVIDER_URL"`
 	ClientID             string `envconfig:"OAUTH_CLIENT_ID"`
-	ClientSecret         string `envconfig:"OAUTH_CLIENT_SECRET"`
 	MetricsWriteInterval int    `envconfig:"METRICS_WRITE_INTERVAL"`
+	DbSecrets            string `envconfig:"DB_SECRET"`
+}
+
+type DBSecrets struct {
+	Password string `json:"password,omitempty"`
+	DBName   string `json:"dbname,omitempty"`
+	Engine   string `json:"engine,omitempty"`
+	Port     int    `json:"port,omitempty"`
+	Host     string `json:"host,omitempty"`
+	Username string `json:"username,omitempty"`
 }
 
 func (cfg *Config) validate() error {
@@ -37,6 +49,31 @@ func (cfg *Config) validate() error {
 	if cfg.Branch == "" {
 		return ErrMissingEnvironmentBranch
 	}
+
+	return nil
+}
+
+// "postgresql://testing@postgres/testing?sslmode=disable&password=Tig%23fD%5BXED%2C)S%3AG%3B%3C.ruAm9"
+
+// this extracts the JSON secret value from the environment and builds the
+// datasource used to connect to postgresql
+func (cfg *Config) parseDbSecrets() error {
+
+	if cfg.DbSecrets == "" {
+		log.Info().Msg("no DB secrets value provided")
+		return nil
+	}
+
+	dbsecrets := &DBSecrets{}
+
+	err := json.Unmarshal([]byte(cfg.DbSecrets), dbsecrets)
+	if err != nil {
+		return err
+	}
+
+	cfg.PGDatasource = fmt.Sprintf("postgres://%s@%s:%d/%s?password=%s", dbsecrets.Username, dbsecrets.Host, dbsecrets.Port, dbsecrets.DBName, url.QueryEscape(dbsecrets.Password))
+
+	log.Debug().Str("PGDatasource", cfg.PGDatasource).Msg("configured PG datasource")
 
 	return nil
 }
@@ -60,6 +97,10 @@ func NewDefaultConfig() (*Config, error) {
 	err := envconfig.Process("", cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to parse environment config")
+	}
+	err = cfg.parseDbSecrets()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed parse db secret")
 	}
 	err = cfg.validate()
 	if err != nil {

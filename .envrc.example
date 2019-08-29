@@ -1,2 +1,19 @@
-export POSTGRES_PASSWORD=6jhVPaQWhgEMl0sXPnNmkLfS
-export POSTGRES_ROOT_PASSWORD=qgZqZGdoe5loJ0OrZvq36LBr
+# Used to connect to AWS for deployments
+export AWS_PROFILE=whatever
+export AWS_REGION=ap-southeast-2
+
+# Used to seed the passwords used by docker compose because security
+export POSTGRES_PASSWORD=xxx
+export POSTGRES_ROOT_PASSWORD=xxx
+
+# Used for development locally
+export OAUTH_CLIENT_ID=xxx
+export OAUTH_CLIENT_SECRET=xxx
+export OPENID_PROVIDER_URL=https://cognito-idp.ap-southeast-2.amazonaws.com/ap-southeast-2_XXXXXXXXXS
+export STAGE=dev
+export BRANCH=master
+
+# Used by CDK for deployment
+export DOMAIN_NAME=whatever.cloud.
+export HOSTED_ZONE_ID=XXXXXXXXXXXXX
+export ACM_CERTIFICATE_ARN=arn:aws:acm:ap-southeast-2:293499315857:certificate/ec23b342-9f33-4642-be9b-0c3cfed9626c

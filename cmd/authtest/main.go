@@ -40,7 +40,7 @@ func main() {
 	conf := &clientcredentials.Config{
 		ClientID:     appClientID,
 		ClientSecret: appClientSecret,
-		Scopes:       []string{"exitus/issue.read", "exitus/issue.write", "exitus/project.read"},
+		Scopes:       []string{"exitus/issue.read", "exitus/issue.write", "exitus/project.read", "exitus/project.write"},
 		TokenURL:     provider.Endpoint().TokenURL,
 		AuthStyle:    oauth2.AuthStyleInHeader,
 	}

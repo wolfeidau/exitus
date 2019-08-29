@@ -50,7 +50,9 @@ func emptyDBPreserveSchema(t testing.TB, d *sql.DB) {
 	for rows.Next() {
 		var table string
 		err = rows.Scan(&table)
-		t.Fatal(err)
+		if err != nil {
+			t.Fatal(err)
+		}
 		tables = append(tables, table)
 	}
 	if err = rows.Close(); err != nil {
