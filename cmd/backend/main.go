@@ -9,6 +9,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/api"
 	"github.com/wolfeidau/exitus/pkg/conf"
 	"github.com/wolfeidau/exitus/pkg/db"
+	"github.com/wolfeidau/exitus/pkg/healthz"
 	"github.com/wolfeidau/exitus/pkg/metrics"
 	"github.com/wolfeidau/exitus/pkg/middleware"
 	"github.com/wolfeidau/exitus/pkg/server"
@@ -49,6 +50,8 @@ func main() {
 	// shut up
 	e.Logger.SetOutput(ioutil.Discard)
 	e.Logger.SetLevel(echolog.OFF)
+
+	e.GET("/healthz", echo.WrapHandler(healthz.Handler()))
 
 	// add a version to the api
 	g := e.Group("/v1")

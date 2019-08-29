@@ -18,7 +18,7 @@ services:
       environment:
         - LOGLEVEL=DEBUG
         - POSTGRES_PASSWORD
-        - PGDATASOURCE=postgres://testing:${POSTGRES_PASSWORD}@postgres/testing?sslmode=disable
+        - PGDATASOURCE=postgres://testing@postgres/testing?sslmode=disable&password=${POSTGRES_PASSWORD}
         - ADDR=:8080
         - STAGE=local
         - BRANCH=master
