@@ -1313,7 +1313,7 @@ func NewClientWithResponsesAndRequestEditorFunc(server string, reqEditorFn Reque
 type customersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]CustomersPage
+	JSON200      *CustomersPage
 }
 
 // Status returns HTTPResponse.Status
@@ -1335,7 +1335,7 @@ func (r customersResponse) StatusCode() int {
 type newCustomerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]Customer
+	JSON201      *Customer
 }
 
 // Status returns HTTPResponse.Status
@@ -1379,7 +1379,7 @@ func (r getCustomerResponse) StatusCode() int {
 type updateCustomerResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]Customer
+	JSON201      *Customer
 }
 
 // Status returns HTTPResponse.Status
@@ -1401,7 +1401,7 @@ func (r updateCustomerResponse) StatusCode() int {
 type projectsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]ProjectsPage
+	JSON200      *ProjectsPage
 }
 
 // Status returns HTTPResponse.Status
@@ -1423,7 +1423,7 @@ func (r projectsResponse) StatusCode() int {
 type newProjectResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]Project
+	JSON201      *Project
 }
 
 // Status returns HTTPResponse.Status
@@ -1467,7 +1467,7 @@ func (r getProjectResponse) StatusCode() int {
 type updateProjectResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]Project
+	JSON201      *Project
 }
 
 // Status returns HTTPResponse.Status
@@ -1489,7 +1489,7 @@ func (r updateProjectResponse) StatusCode() int {
 type issuesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]IssuesPage
+	JSON200      *IssuesPage
 }
 
 // Status returns HTTPResponse.Status
@@ -1511,7 +1511,7 @@ func (r issuesResponse) StatusCode() int {
 type newIssueResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]Issue
+	JSON201      *Issue
 }
 
 // Status returns HTTPResponse.Status
@@ -1599,7 +1599,7 @@ func (r commentsResponse) StatusCode() int {
 type newCommentResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON201      *[]Comment
+	JSON201      *Comment
 }
 
 // Status returns HTTPResponse.Status
@@ -1643,7 +1643,7 @@ func (r updateCommentResponse) StatusCode() int {
 type usersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]UsersPage
+	JSON200      *UsersPage
 }
 
 // Status returns HTTPResponse.Status
@@ -1900,7 +1900,7 @@ func ParsecustomersResponse(rsp *http.Response) (*customersResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		response.JSON200 = &[]CustomersPage{}
+		response.JSON200 = &CustomersPage{}
 		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
 			return nil, err
 		}
@@ -1924,7 +1924,7 @@ func ParsenewCustomerResponse(rsp *http.Response) (*newCustomerResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		response.JSON201 = &[]Customer{}
+		response.JSON201 = &Customer{}
 		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
 			return nil, err
 		}
@@ -1974,7 +1974,7 @@ func ParseupdateCustomerResponse(rsp *http.Response) (*updateCustomerResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		response.JSON201 = &[]Customer{}
+		response.JSON201 = &Customer{}
 		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
 			return nil, err
 		}
@@ -1998,7 +1998,7 @@ func ParseprojectsResponse(rsp *http.Response) (*projectsResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		response.JSON200 = &[]ProjectsPage{}
+		response.JSON200 = &ProjectsPage{}
 		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
 			return nil, err
 		}
@@ -2022,7 +2022,7 @@ func ParsenewProjectResponse(rsp *http.Response) (*newProjectResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		response.JSON201 = &[]Project{}
+		response.JSON201 = &Project{}
 		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
 			return nil, err
 		}
@@ -2070,7 +2070,7 @@ func ParseupdateProjectResponse(rsp *http.Response) (*updateProjectResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		response.JSON201 = &[]Project{}
+		response.JSON201 = &Project{}
 		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
 			return nil, err
 		}
@@ -2094,7 +2094,7 @@ func ParseissuesResponse(rsp *http.Response) (*issuesResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		response.JSON200 = &[]IssuesPage{}
+		response.JSON200 = &IssuesPage{}
 		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
 			return nil, err
 		}
@@ -2118,7 +2118,7 @@ func ParsenewIssueResponse(rsp *http.Response) (*newIssueResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		response.JSON201 = &[]Issue{}
+		response.JSON201 = &Issue{}
 		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
 			return nil, err
 		}
@@ -2214,7 +2214,7 @@ func ParsenewCommentResponse(rsp *http.Response) (*newCommentResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 201:
-		response.JSON201 = &[]Comment{}
+		response.JSON201 = &Comment{}
 		if err := json.Unmarshal(bodyBytes, response.JSON201); err != nil {
 			return nil, err
 		}
@@ -2262,7 +2262,7 @@ func ParseusersResponse(rsp *http.Response) (*usersResponse, error) {
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		response.JSON200 = &[]UsersPage{}
+		response.JSON200 = &UsersPage{}
 		if err := json.Unmarshal(bodyBytes, response.JSON200); err != nil {
 			return nil, err
 		}
@@ -2864,49 +2864,49 @@ func RegisterHandlers(router runtime.EchoRouter, si ServerInterface) {
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"ppCUsf7SxTSHN5eb/wQAAP//E1OWH7tIAAA=",
+	"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",
+	"bv4XAAD//9oLvwDBRwAA",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

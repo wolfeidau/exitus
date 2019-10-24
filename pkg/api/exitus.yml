@@ -49,9 +49,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Customer'
+                $ref: '#/components/schemas/Customer'
     get:
       summary: "Get a list of customers."
       operationId: Customers
@@ -70,9 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CustomersPage'
+                $ref: '#/components/schemas/CustomersPage'
   /customers/{id}:
     get:
       operationId: GetCustomer
@@ -124,9 +120,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Customer'
+                $ref: '#/components/schemas/Customer'
   /projects:
     post:
       summary: "Create a project."
@@ -148,9 +142,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/Project'
     get:
       summary: "Get a list of projects."
       description: "Return a list of projects."
@@ -169,9 +161,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProjectsPage'
+                $ref: '#/components/schemas/ProjectsPage'
   /projects/{id}:
     get:
       summary: "Get a project."
@@ -222,9 +212,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/Project'
   /projects/{project_id}/issues:
     post:
       summary: "Create a issue."
@@ -253,9 +241,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Issue'
+                $ref: '#/components/schemas/Issue'
     get:
       summary: "Get a list of issues."
       operationId: Issues
@@ -280,9 +266,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IssuesPage'
+                $ref: '#/components/schemas/IssuesPage'
   /projects/{project_id}/issues/{id}:
     get:
       operationId: GetIssue
@@ -372,9 +356,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Comment'
+                $ref: '#/components/schemas/Comment'
     get:
       summary: "Get a list of Comments."
       operationId: Comments
@@ -495,9 +477,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/UsersPage'
+                $ref: '#/components/schemas/UsersPage'
   /users/{id}:
     get:
       operationId: GetUser

@@ -19,7 +19,7 @@ generate:
 	go generate ./pkg/api/
 .PHONY: generate
 
-build-docker:
+docker-build:
 	@echo "--- build all the things"
 	@go mod download
 	@docker run --rm \
@@ -48,3 +48,7 @@ local: generate
 watchexec:
 	watchexec --restart --exts "go" --watch . "docker-compose restart backend"
 .PHONY: watchexec
+
+cdk-deploy: docker-build
+	@echo "--- deploy all the things"
+	$(shell cd infra && npm run cdk deploy -- --require-approval '*')
