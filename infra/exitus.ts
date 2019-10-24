@@ -4,7 +4,7 @@ import { DatabaseInstance, DatabaseInstanceEngine } from '@aws-cdk/aws-rds'
 import { ManagedPolicy, ServicePrincipal, Role } from '@aws-cdk/aws-iam'
 import { Vpc, InstanceType, InstanceClass, SubnetType, InstanceSize, Port } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerImage, Secret } from '@aws-cdk/aws-ecs';
-import { LoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
+import { ApplicationLoadBalancedFargateService } from '@aws-cdk/aws-ecs-patterns';
 import { HostedZone, ARecord, AddressRecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
@@ -96,7 +96,7 @@ class ServiceStack extends Stack {
 
         const certificate = Certificate.fromCertificateArn(this,`${appName}Cert`, acmCertificateArn)
 
-        const containerSvc = new LoadBalancedFargateService(this, `${appName}FargateService`, {
+        const containerSvc = new ApplicationLoadBalancedFargateService(this, `${appName}FargateService`, {
             cluster,
             image: ContainerImage.fromAsset(resolve(__dirname, './deploy')),
             environment: {
