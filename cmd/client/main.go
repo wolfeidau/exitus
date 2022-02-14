@@ -65,14 +65,14 @@ func main() {
 	switch cmd {
 	case listProjects.FullCommand():
 
-		client := &api.Client{Server: *endpoint, Client: *sess.Client(context.TODO()), RequestEditor: nil}
+		client := &api.Client{Server: *endpoint, Client: sess.Client(context.TODO())}
 
 		res, err := client.Projects(context.TODO(), &api.ProjectsParams{})
 		if err != nil {
 			log.Fatal().Err(err).Msg("failed to list projects")
 		}
 
-		projectsRes, err := api.ParseprojectsResponse(res)
+		projectsRes, err := api.ParseProjectsResponse(res)
 		if err != nil {
 			log.Fatal().Err(err).Msg("failed to list projects")
 		}

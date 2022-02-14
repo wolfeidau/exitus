@@ -1,6 +1,7 @@
 package migrations_test
 
 import (
+	"io/fs"
 	"path/filepath"
 	"reflect"
 	"sort"
@@ -42,7 +43,7 @@ func TestNeedsGenerate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := migrations.AssetNames()
+	got, err := fs.Glob(migrations.MigrationsFs, "*.sql")
 	sort.Strings(want)
 	sort.Strings(got)
 	if !reflect.DeepEqual(got, want) {
