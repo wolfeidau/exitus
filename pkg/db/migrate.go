@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
-	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/rs/zerolog/log"
 	"github.com/wolfeidau/exitus/migrations"
 )
@@ -19,13 +19,12 @@ func NewMigrate(db *sql.DB) *migrate.Migrate {
 		log.Fatal().Err(err).Msg("failed to load driver")
 	}
 
-	s := bindata.Resource(migrations.AssetNames(), migrations.Asset)
-	d, err := bindata.WithInstance(s)
+	d, err := iofs.New(migrations.MigrationsFs, ".")
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to read assets from go-bindata")
+		log.Fatal().Err(err).Msg("failed to read assets from iofs")
 	}
 
-	m, err := migrate.NewWithInstance("go-bindata", d, "postgres", driver)
+	m, err := migrate.NewWithInstance("iofs", d, "postgres", driver)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to create migration from go-bindata")
 	}
