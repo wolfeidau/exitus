@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/keegancsmith/sqlf v1.1.1
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/labstack/echo/v4 v4.6.3
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/labstack/gommon v0.3.1
 	github.com/lib/pq v1.10.4
 	github.com/motemen/go-loghttp v0.0.0-20170804080138-974ac5ceac27
