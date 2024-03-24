@@ -22,7 +22,7 @@ func (e *CommentNotFoundError) Error() string {
 	return fmt.Sprintf("comment not found: %s", e.Message)
 }
 
-// Comments provides a comments store
+// Comments provides a comments store.
 type Comments interface {
 	GetByID(ctx context.Context, id, issueId, projectId, customerId string) (*api.Comment, error)
 	Create(ctx context.Context, newComment *api.NewComment, issueId, projectId, customerId, author string) (*api.Comment, error)
@@ -36,7 +36,7 @@ type CommentListOptions struct {
 	*LimitOffset
 }
 
-// NewCommentListOptions create a new opts
+// NewCommentListOptions create a new opts.
 func NewCommentListOptions(query string, offset int, limit int) *CommentListOptions {
 	return &CommentListOptions{
 		ContentLikeOptions: &ContentLikeOptions{query},
@@ -44,13 +44,13 @@ func NewCommentListOptions(query string, offset int, limit int) *CommentListOpti
 	}
 }
 
-// ContentLikeOptions used to query by content using like
+// ContentLikeOptions used to query by content using like.
 type ContentLikeOptions struct {
 	// Query specifies a search query for organizations.
 	Query string
 }
 
-// ListContentLikeSQL used to search by content if query is set
+// ListContentLikeSQL used to search by content if query is set.
 func ListContentLikeSQL(opt *ContentLikeOptions) (conds []*sqlf.Query) {
 	conds = []*sqlf.Query{sqlf.Sprintf("TRUE")}
 	if opt.Query != "" {
@@ -60,18 +60,18 @@ func ListContentLikeSQL(opt *ContentLikeOptions) (conds []*sqlf.Query) {
 	return conds
 }
 
-// CommentsPG provides a comments store for postgresql
+// CommentsPG provides a comments store for postgresql.
 type CommentsPG struct {
 	dbconn *sql.DB
 	cfg    *conf.Config
 }
 
-// NewComments new comments store
+// NewComments new comments store.
 func NewComments(dbconn *sql.DB, cfg *conf.Config) Comments {
 	return &CommentsPG{dbconn: dbconn, cfg: cfg}
 }
 
-// GetById get comment by id
+// GetById get comment by id.
 func (cs *CommentsPG) GetByID(ctx context.Context, id, issueId, projectId, customerId string) (*api.Comment, error) {
 	comments, err := cs.getBySQL(ctx, "WHERE id=$1 AND issue_id=$2 AND project_id=$3 AND customer_id=$4 LIMIT 1", id, issueId, projectId, customerId)
 	if err != nil {
@@ -85,7 +85,7 @@ func (cs *CommentsPG) GetByID(ctx context.Context, id, issueId, projectId, custo
 	return &comments[0], nil
 }
 
-// Create create new comment
+// Create create new comment.
 func (cs *CommentsPG) Create(ctx context.Context, newComment *api.NewComment, issueId, projectId, customerId, author string) (*api.Comment, error) {
 	comment := api.Comment{}
 
@@ -104,9 +104,8 @@ func (cs *CommentsPG) Create(ctx context.Context, newComment *api.NewComment, is
 	return &comment, nil
 }
 
-// Update update an comment
+// Update update an comment.
 func (cs *CommentsPG) Update(ctx context.Context, updatedComment *api.UpdatedComment, id, issueId, projectId, customerId string) (*api.Comment, error) {
-
 	fields := []*sqlf.Query{sqlf.Sprintf("content=%s, updated_at=%s", updatedComment.Content, time.Now())}
 
 	qry := sqlf.Sprintf("UPDATE comments SET %s WHERE id=%s AND customer_id=%s", sqlf.Join(fields, ","), id, customerId)
@@ -118,7 +117,7 @@ func (cs *CommentsPG) Update(ctx context.Context, updatedComment *api.UpdatedCom
 	return cs.GetByID(ctx, id, issueId, projectId, customerId)
 }
 
-// List list comments
+// List list comments.
 func (cs *CommentsPG) List(ctx context.Context, opt *CommentListOptions, issueId, projectId, customerId string) ([]api.Comment, error) {
 	if opt == nil {
 		opt = &CommentListOptions{}

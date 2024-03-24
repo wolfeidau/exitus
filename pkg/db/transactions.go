@@ -29,7 +29,7 @@ type Transaction interface {
 type TxFn func(Transaction) error
 
 // WithTransaction creates a new transaction and handles rollback/commit based on the
-// error object returned by the `TxFn`
+// error object returned by the `TxFn`.
 func WithTransaction(ctx context.Context, db *sql.DB, fn TxFn) (err error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {

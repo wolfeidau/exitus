@@ -24,7 +24,6 @@ import (
 var supportedSigAlgs = []string{"RS256"}
 
 func main() {
-
 	appClientID := os.Getenv("OAUTH_CLIENT_ID")
 	appClientSecret := os.Getenv("OAUTH_CLIENT_SECRET")
 

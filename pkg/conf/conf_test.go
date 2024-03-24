@@ -9,7 +9,6 @@ import (
 var dbsecret = "{\"password\":\"Tig#fD[XED,)S:G;<.ruAm9\",\"dbname\":\"exitus\",\"engine\":\"postgres\",\"port\":5432,\"host\":\"abc123abc123abc123.abc123abc123.ap-southeast-2.rds.amazonaws.com\",\"username\":\"exitus\"}"
 
 func TestConfig_DBSecret(t *testing.T) {
-
 	assert := require.New(t)
 
 	cfg := &Config{}

@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	// DefaultCustomerID TODO NOT THIS
+	// DefaultCustomerID TODO NOT THIS.
 	DefaultCustomerID = "a4a777ff-fd47-42ab-84b4-1cca19a51f8f"
 
-	// DefaultReporter TODO NOT THIS
+	// DefaultReporter TODO NOT THIS.
 	DefaultReporter = "34a20135-1c9b-4c4d-b590-7771207ed847"
 
-	// DefaultAuthor TODO NOT THIS
+	// DefaultAuthor TODO NOT THIS.
 	DefaultAuthor = "3fbecb27-1f23-4ed0-91e4-68f97a1f0364"
 )
 
@@ -28,14 +28,13 @@ type Server struct {
 	stores *store.Stores
 }
 
-// NewServer new api server
+// NewServer new api server.
 func NewServer(cfg *conf.Config, stores *store.Stores) (*Server, error) {
 	return &Server{cfg: cfg, stores: stores}, nil
 }
 
-// Customers Get a list of customers. (GET /customers)
+// Customers Get a list of customers. (GET /customers).
 func (sv *Server) Customers(ctx echo.Context, params api.CustomersParams) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -57,9 +56,8 @@ func (sv *Server) Customers(ctx echo.Context, params api.CustomersParams) error 
 	return ctx.JSON(http.StatusOK, &api.CustomersPage{Customers: resCusts})
 }
 
-// NewCustomer Create a customer. (POST /customers)
+// NewCustomer Create a customer. (POST /customers).
 func (sv *Server) NewCustomer(ctx echo.Context) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -84,9 +82,8 @@ func (sv *Server) NewCustomer(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, resCust)
 }
 
-// GetCustomer (GET /customers/{id})
+// GetCustomer (GET /customers/{id}).
 func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -106,9 +103,8 @@ func (sv *Server) GetCustomer(ctx echo.Context, id string) error {
 	return ctx.JSON(http.StatusOK, resCust)
 }
 
-// UpdateCustomer Update a customer. (PUT /customers/{id})
+// UpdateCustomer Update a customer. (PUT /customers/{id}).
 func (sv *Server) UpdateCustomer(ctx echo.Context, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -130,9 +126,8 @@ func (sv *Server) UpdateCustomer(ctx echo.Context, id string) error {
 	return ctx.JSON(http.StatusOK, resCust)
 }
 
-// Projects Get a list of projects. (GET /projects)
+// Projects Get a list of projects. (GET /projects).
 func (sv *Server) Projects(ctx echo.Context, params api.ProjectsParams) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -154,9 +149,8 @@ func (sv *Server) Projects(ctx echo.Context, params api.ProjectsParams) error {
 	return ctx.JSON(http.StatusOK, &api.ProjectsPage{Projects: resProjs})
 }
 
-// NewProject Create a project. (POST /projects)
+// NewProject Create a project. (POST /projects).
 func (sv *Server) NewProject(ctx echo.Context) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -181,9 +175,8 @@ func (sv *Server) NewProject(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, resProj)
 }
 
-// GetProject (GET /projects/{id})
+// GetProject (GET /projects/{id}).
 func (sv *Server) GetProject(ctx echo.Context, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -203,9 +196,8 @@ func (sv *Server) GetProject(ctx echo.Context, id string) error {
 	return ctx.JSON(http.StatusOK, resProj)
 }
 
-// UpdateProject Update a project. (PUT /projects/{id})
+// UpdateProject Update a project. (PUT /projects/{id}).
 func (sv *Server) UpdateProject(ctx echo.Context, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -227,9 +219,8 @@ func (sv *Server) UpdateProject(ctx echo.Context, id string) error {
 	return ctx.JSON(http.StatusOK, resProj)
 }
 
-// Issues Get a list of issues. (GET /projects/{project_id}/issues)
+// Issues Get a list of issues. (GET /projects/{project_id}/issues).
 func (sv *Server) Issues(ctx echo.Context, projectId string, params api.IssuesParams) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -251,9 +242,8 @@ func (sv *Server) Issues(ctx echo.Context, projectId string, params api.IssuesPa
 	return ctx.JSON(http.StatusOK, &api.IssuesPage{Issues: resIssues})
 }
 
-// NewIssue Create a issue. (POST /projects/{project_id}/issues)
+// NewIssue Create a issue. (POST /projects/{project_id}/issues).
 func (sv *Server) NewIssue(ctx echo.Context, projectId string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -275,9 +265,8 @@ func (sv *Server) NewIssue(ctx echo.Context, projectId string) error {
 	return ctx.JSON(http.StatusCreated, resIssue)
 }
 
-// UpdateIssue (PUT /projects/{project_id}/issues/{id})
+// UpdateIssue (PUT /projects/{project_id}/issues/{id}).
 func (sv *Server) UpdateIssue(ctx echo.Context, projectId string, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -299,9 +288,8 @@ func (sv *Server) UpdateIssue(ctx echo.Context, projectId string, id string) err
 	return ctx.JSON(http.StatusOK, resIssue)
 }
 
-// GetIssue (GET /projects/{project_id}/issues/{id})
+// GetIssue (GET /projects/{project_id}/issues/{id}).
 func (sv *Server) GetIssue(ctx echo.Context, projectId string, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -321,9 +309,8 @@ func (sv *Server) GetIssue(ctx echo.Context, projectId string, id string) error 
 	return ctx.JSON(http.StatusOK, resIssue)
 }
 
-// Comments Get a list of Comments. (GET /projects/{project_id}/issues/{issue_id}/comments)
+// Comments Get a list of Comments. (GET /projects/{project_id}/issues/{issue_id}/comments).
 func (sv *Server) Comments(ctx echo.Context, projectId string, issueId string, params api.CommentsParams) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -345,9 +332,8 @@ func (sv *Server) Comments(ctx echo.Context, projectId string, issueId string, p
 	return ctx.JSON(http.StatusOK, &api.CommentsPage{Comments: resComments})
 }
 
-// NewComment Create a comment on a issue. (POST /projects/{project_id}/issues/{issue_id}/comments)
+// NewComment Create a comment on a issue. (POST /projects/{project_id}/issues/{issue_id}/comments).
 func (sv *Server) NewComment(ctx echo.Context, projectId string, issueId string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -369,9 +355,8 @@ func (sv *Server) NewComment(ctx echo.Context, projectId string, issueId string)
 	return ctx.JSON(http.StatusCreated, resComment)
 }
 
-// UpdateComment (PUT /projects/{project_id}/issues/{issue_id}/comments/{id})
+// UpdateComment (PUT /projects/{project_id}/issues/{issue_id}/comments/{id}).
 func (sv *Server) UpdateComment(ctx echo.Context, projectId string, issueId string, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -393,9 +378,8 @@ func (sv *Server) UpdateComment(ctx echo.Context, projectId string, issueId stri
 	return ctx.JSON(http.StatusOK, resComment)
 }
 
-// GetComment (GET /projects/{project_id}/issues/{issue_id}/comments/{id})
+// GetComment (GET /projects/{project_id}/issues/{issue_id}/comments/{id}).
 func (sv *Server) GetComment(ctx echo.Context, projectId string, issueId string, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -415,9 +399,8 @@ func (sv *Server) GetComment(ctx echo.Context, projectId string, issueId string,
 	return ctx.JSON(http.StatusOK, resComment)
 }
 
-// Users Get a list of users. (GET /users)
+// Users Get a list of users. (GET /users).
 func (sv *Server) Users(ctx echo.Context, params api.UsersParams) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -429,9 +412,8 @@ func (sv *Server) Users(ctx echo.Context, params api.UsersParams) error {
 	return ctx.JSON(http.StatusNotImplemented, "not implemented yet")
 }
 
-// GetUser (GET /users/{id})
+// GetUser (GET /users/{id}).
 func (sv *Server) GetUser(ctx echo.Context, id string) error {
-
 	// Validate access token.
 	//
 	// 🚨 SECURITY: It's important we check for the correct scopes to know what this token
@@ -444,7 +426,6 @@ func (sv *Server) GetUser(ctx echo.Context, id string) error {
 }
 
 func userHasAccess(ctx echo.Context) bool {
-
 	user, err := auth.LoadUserFromContext(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to load user from context")

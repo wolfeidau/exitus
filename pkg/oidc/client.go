@@ -22,7 +22,6 @@ type SessionConfig struct {
 }
 
 func New(ctx context.Context, config SessionConfig) (*Session, error) {
-
 	provider, err := oidc.NewProvider(ctx, config.ProviderURL)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get endpoint")

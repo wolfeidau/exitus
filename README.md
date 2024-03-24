@@ -24,9 +24,6 @@ The goal of the project is to cover a few key pillars:
 
 Authentication for this service is provided by an external OpenID provider such as [AWS Cognito](https://aws.amazon.com/cognito/) or [Keycloak](https://www.keycloak.org). Clients authenticate with one of these services and then provide their JWT token, which is [validated](pkg/jwt/jwt.go) by the exitus service using [go-oidc](github.com/wolfeidau/go-oidc) developed by CoreOS.
 
-## Infrastructure
-
-The exitus service uses [AWS ECS](https://aws.amazon.com/ecs/) to schedule the service, and [AWS RDS](https://aws.amazon.com/rds/) to host the PostgreSQL database. This is deployed using the recently released [AWS Cloud Development Kit](https://aws.amazon.com/cdk/), the code is [here](infra/exitus.ts).
 
 ### Secrets
 

@@ -11,33 +11,32 @@ import (
 )
 
 const (
-	// DefaultAuthScheme default authentication scheme for JWT tokens
+	// DefaultAuthScheme default authentication scheme for JWT tokens.
 	DefaultAuthScheme = "Bearer"
-	// DefaultAuthHeaderName default header to load the JWT
+	// DefaultAuthHeaderName default header to load the JWT.
 	DefaultAuthHeaderName = "Authorization"
 
-	// DefaultContextVar the variable in the context to store the JWT token after successful login
+	// DefaultContextVar the variable in the context to store the JWT token after successful login.
 	DefaultContextVar = "user"
 )
 
 var (
-	// ErrJWTMissing missing or malformed jwt
+	// ErrJWTMissing missing or malformed jwt.
 	ErrJWTMissing = echo.NewHTTPError(http.StatusBadRequest, "missing or malformed jwt")
 
-	// ErrJWTValidation invalid jwt
+	// ErrJWTValidation invalid jwt.
 	ErrJWTValidation = echo.NewHTTPError(http.StatusUnauthorized, "invalid jwt")
 )
 
-// JWTConfig jwt middleware configuration
+// JWTConfig jwt middleware configuration.
 type JWTConfig struct {
 	ProviderURL string
 	ClientID    string
 	AuthScheme  string
 }
 
-// JWTWithConfig middleware which validates tokens
+// JWTWithConfig middleware which validates tokens.
 func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
-
 	if config.ProviderURL == "" {
 		log.Fatal().Msg("exitus: missing provider URL")
 	}
@@ -50,7 +49,6 @@ func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
 
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-
 			token, err := extractFromHeader(c, "Authorization", config.AuthScheme)
 			if err != nil {
 				return err
@@ -75,7 +73,7 @@ func JWTWithConfig(config *JWTConfig) echo.MiddlewareFunc {
 	}
 }
 
-// ExtractFromHeader attempt to get the JWT from the provided header
+// ExtractFromHeader attempt to get the JWT from the provided header.
 func extractFromHeader(c echo.Context, header, authScheme string) (string, error) {
 	auth := c.Request().Header.Get(header)
 	l := len(authScheme)
@@ -85,7 +83,7 @@ func extractFromHeader(c echo.Context, header, authScheme string) (string, error
 	return "", ErrJWTMissing
 }
 
-// ValidateToken and return an error if it fails
+// ValidateToken and return an error if it fails.
 func validateToken(ctx context.Context, providerURL, token string) (*jwt.JwtPayload, error) {
 	payload, err := jwt.Validate(ctx, providerURL, token)
 	if err != nil {

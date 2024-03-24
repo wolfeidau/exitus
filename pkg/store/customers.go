@@ -15,7 +15,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/db"
 )
 
-// ErrCustomerNameAlreadyExists customer name is already taken
+// ErrCustomerNameAlreadyExists customer name is already taken.
 var ErrCustomerNameAlreadyExists = errors.New("customer name is already taken")
 
 // CustomerNotFoundError occurs when an customer is not found.
@@ -27,7 +27,7 @@ func (e *CustomerNotFoundError) Error() string {
 	return fmt.Sprintf("customer not found: %s", e.Message)
 }
 
-// Customers provides a customer store
+// Customers provides a customer store.
 type Customers interface {
 	GetByID(ctx context.Context, id string) (*api.Customer, error)
 	Create(ctx context.Context, newCustomer *api.NewCustomer) (*api.Customer, error)
@@ -41,7 +41,7 @@ type CustomersListOptions struct {
 	*LimitOffset
 }
 
-// NewCustomersListOptions create a new opts
+// NewCustomersListOptions create a new opts.
 func NewCustomersListOptions(query string, offset int, limit int) *CustomersListOptions {
 	return &CustomersListOptions{
 		NameLikeOptions: &NameLikeOptions{query},
@@ -49,18 +49,18 @@ func NewCustomersListOptions(query string, offset int, limit int) *CustomersList
 	}
 }
 
-// CustomersPG provides a customer store using postgresql
+// CustomersPG provides a customer store using postgresql.
 type CustomersPG struct {
 	dbconn *sql.DB
 	cfg    *conf.Config
 }
 
-// NewCustomers new project store
+// NewCustomers new project store.
 func NewCustomers(dbconn *sql.DB, cfg *conf.Config) Customers {
 	return &CustomersPG{dbconn: dbconn, cfg: cfg}
 }
 
-// GetByID get customer by id
+// GetByID get customer by id.
 func (cs *CustomersPG) GetByID(ctx context.Context, id string) (*api.Customer, error) {
 	custs, err := cs.getBySQL(ctx, "WHERE id=$1 LIMIT 1", id)
 	if err != nil {
@@ -75,9 +75,8 @@ func (cs *CustomersPG) GetByID(ctx context.Context, id string) (*api.Customer, e
 	return &custs[0], nil
 }
 
-// Update update customer by id
+// Update update customer by id.
 func (cs *CustomersPG) Update(ctx context.Context, updatedCustomer *api.UpdatedCustomer, id string) (*api.Customer, error) {
-
 	fields := []*sqlf.Query{sqlf.Sprintf("name=%s, labels=%s, updated_at=%s", updatedCustomer.Name, pq.Array(updatedCustomer.Labels), time.Now())}
 
 	if updatedCustomer.Description != nil {
@@ -93,9 +92,8 @@ func (cs *CustomersPG) Update(ctx context.Context, updatedCustomer *api.UpdatedC
 	return cs.GetByID(ctx, id)
 }
 
-// Create create a customer
+// Create create a customer.
 func (cs *CustomersPG) Create(ctx context.Context, newCustomer *api.NewCustomer) (*api.Customer, error) {
-
 	resCust := &api.Customer{}
 
 	qry := sqlf.Sprintf("INSERT INTO customers(name, description, labels) VALUES(%s, %s, %s)",
@@ -122,7 +120,7 @@ func (cs *CustomersPG) Create(ctx context.Context, newCustomer *api.NewCustomer)
 	return resCust, nil
 }
 
-// List list all customers
+// List list all customers.
 func (cs *CustomersPG) List(ctx context.Context, opt *CustomersListOptions) ([]api.Customer, error) {
 	if opt == nil {
 		opt = &CustomersListOptions{}

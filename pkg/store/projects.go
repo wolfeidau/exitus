@@ -14,7 +14,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/db"
 )
 
-// ErrProjectNameAlreadyExists project name is already taken
+// ErrProjectNameAlreadyExists project name is already taken.
 var ErrProjectNameAlreadyExists = errors.New("project name is already taken")
 
 // ProjectNotFoundError occurs when an project is not found.
@@ -26,7 +26,7 @@ func (e *ProjectNotFoundError) Error() string {
 	return fmt.Sprintf("project not found: %s", e.Message)
 }
 
-// Projects provides a projects store
+// Projects provides a projects store.
 type Projects interface {
 	GetByID(ctx context.Context, id string, customerId string) (*api.Project, error)
 	Create(ctx context.Context, newProj *api.NewProject, customerId string) (*api.Project, error)
@@ -40,7 +40,7 @@ type ProjectsListOptions struct {
 	*LimitOffset
 }
 
-// NewProjectsListOptions create a new opts
+// NewProjectsListOptions create a new opts.
 func NewProjectsListOptions(query string, offset int, limit int) *ProjectsListOptions {
 	return &ProjectsListOptions{
 		NameLikeOptions: &NameLikeOptions{query},
@@ -48,18 +48,18 @@ func NewProjectsListOptions(query string, offset int, limit int) *ProjectsListOp
 	}
 }
 
-// ProjectsPG provides a projects store for postgresql
+// ProjectsPG provides a projects store for postgresql.
 type ProjectsPG struct {
 	dbconn *sql.DB
 	cfg    *conf.Config
 }
 
-// NewProjects new project store
+// NewProjects new project store.
 func NewProjects(dbconn *sql.DB, cfg *conf.Config) Projects {
 	return &ProjectsPG{dbconn: dbconn, cfg: cfg}
 }
 
-// GetByID get project by id
+// GetByID get project by id.
 func (ps *ProjectsPG) GetByID(ctx context.Context, id string, customerId string) (*api.Project, error) {
 	projs, err := ps.getBySQL(ctx, "WHERE id=$1 AND customer_id=$2 LIMIT 1", id, customerId)
 	if err != nil {
@@ -72,9 +72,8 @@ func (ps *ProjectsPG) GetByID(ctx context.Context, id string, customerId string)
 	return &projs[0], nil
 }
 
-// Update update a project
+// Update update a project.
 func (ps *ProjectsPG) Update(ctx context.Context, updatedProject *api.UpdatedProject, id string, customerId string) (*api.Project, error) {
-
 	fields := []*sqlf.Query{sqlf.Sprintf("name=%s, labels=%s, updated_at=%s", updatedProject.Name, pq.Array(updatedProject.Labels), time.Now())}
 
 	if updatedProject.Description != nil {
@@ -90,9 +89,8 @@ func (ps *ProjectsPG) Update(ctx context.Context, updatedProject *api.UpdatedPro
 	return ps.GetByID(ctx, id, customerId)
 }
 
-// Create create a project
+// Create create a project.
 func (ps *ProjectsPG) Create(ctx context.Context, newProj *api.NewProject, customerId string) (*api.Project, error) {
-
 	resProj := api.Project{}
 
 	qry := sqlf.Sprintf("INSERT INTO projects(customer_id, name, description, labels) VALUES(%s, %s, %s, %s)",
@@ -116,7 +114,7 @@ func (ps *ProjectsPG) Create(ctx context.Context, newProj *api.NewProject, custo
 	return &resProj, nil
 }
 
-// List list all projects
+// List list all projects.
 func (ps *ProjectsPG) List(ctx context.Context, opt *ProjectsListOptions, customerId string) ([]api.Project, error) {
 	if opt == nil {
 		opt = &ProjectsListOptions{}
