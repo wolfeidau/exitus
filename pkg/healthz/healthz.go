@@ -27,9 +27,8 @@ type healthCheckResult struct {
 	Runtime *runtimeStats `json:"runtime,omitempty"`
 }
 
-// Handler simple health handler
+// Handler simple health handler.
 func Handler() http.HandlerFunc {
-
 	ticker := time.NewTicker(30 * time.Second)
 	go func() {
 		for range ticker.C {

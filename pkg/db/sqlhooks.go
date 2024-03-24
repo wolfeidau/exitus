@@ -10,7 +10,7 @@ import (
 
 type hook struct{}
 
-// Before implements sqlhooks.Hooks
+// Before implements sqlhooks.Hooks.
 func (h *hook) Before(ctx context.Context, query string, args ...interface{}) (context.Context, error) {
 	parent := opentracing.SpanFromContext(ctx)
 	if parent == nil {
@@ -28,7 +28,7 @@ func (h *hook) Before(ctx context.Context, query string, args ...interface{}) (c
 	return opentracing.ContextWithSpan(ctx, span), nil
 }
 
-// After implements sqlhooks.Hooks
+// After implements sqlhooks.Hooks.
 func (h *hook) After(ctx context.Context, query string, args ...interface{}) (context.Context, error) {
 	span := opentracing.SpanFromContext(ctx)
 	if span != nil {
@@ -37,7 +37,7 @@ func (h *hook) After(ctx context.Context, query string, args ...interface{}) (co
 	return ctx, nil
 }
 
-// After implements sqlhooks.OnErroer
+// After implements sqlhooks.OnErroer.
 func (h *hook) OnError(ctx context.Context, err error, query string, args ...interface{}) error {
 	span := opentracing.SpanFromContext(ctx)
 	if span != nil {

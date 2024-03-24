@@ -19,16 +19,13 @@ import (
 )
 
 // DefaultMaxOpenConnections the default value for max open connections in the
-// PostgreSQL connection pool
+// PostgreSQL connection pool.
 const DefaultMaxOpenConnections = 30
 
-var (
-	registerOnce sync.Once
-)
+var registerOnce sync.Once
 
-// NewDB create a new DB pool
+// NewDB create a new DB pool.
 func NewDB(cfg *conf.Config) (*sql.DB, error) {
-
 	// Force PostgreSQL session timezone to UTC.
 	if v, ok := os.LookupEnv("PGTZ"); ok && v != "UTC" && v != "utc" {
 		log.Warn().Str("ignoredPGTZ", v).Msg("Ignoring PGTZ environment variable; using PGTZ=UTC.")
@@ -115,7 +112,7 @@ func Open(dataSource string) (*sql.DB, error) {
 
 // Ping attempts to contact the database and returns a non-nil error upon failure. It is intended to
 // be used by health checks.
-//func Ping(ctx context.Context) error { return Global.PingContext(ctx) }
+
 
 // configureConnectionPool sets reasonable sizes on the built in DB queue. By
 // default the connection pool is unbounded, which leads to the error `pq:

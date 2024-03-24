@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	// ErrMissingEnvironmentStage missing stage configuration
+	// ErrMissingEnvironmentStage missing stage configuration.
 	ErrMissingEnvironmentStage = errors.New("Missing Stage ENV Variable")
 
-	// ErrMissingEnvironmentBranch missing branch configuration
+	// ErrMissingEnvironmentBranch missing branch configuration.
 	ErrMissingEnvironmentBranch = errors.New("Missing Branch ENV Variable")
 )
 
-// Config for the environment
+// Config for the environment.
 type Config struct {
 	Debug                bool   `envconfig:"DEBUG"`
 	Addr                 string `envconfig:"ADDR" default:":8080"`
@@ -56,9 +56,8 @@ func (cfg *Config) validate() error {
 // "postgresql://testing@postgres/testing?sslmode=disable&password=Tig%23fD%5BXED%2C)S%3AG%3B%3C.ruAm9"
 
 // this extracts the JSON secret value from the environment and builds the
-// datasource used to connect to postgresql
+// datasource used to connect to postgresql.
 func (cfg *Config) parseDbSecrets() error {
-
 	if cfg.DbSecrets == "" {
 		log.Info().Msg("no DB secrets value provided")
 		return nil
@@ -79,7 +78,6 @@ func (cfg *Config) parseDbSecrets() error {
 }
 
 func (cfg *Config) logging() error {
-
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if cfg.Debug {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -91,7 +89,7 @@ func (cfg *Config) logging() error {
 	return nil
 }
 
-// NewDefaultConfig reads configuration from environment variables and validates it
+// NewDefaultConfig reads configuration from environment variables and validates it.
 func NewDefaultConfig() (*Config, error) {
 	cfg := new(Config)
 	err := envconfig.Process("", cfg)

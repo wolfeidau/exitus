@@ -23,7 +23,7 @@ func (e *IssueNotFoundError) Error() string {
 	return fmt.Sprintf("issue not found: %s", e.Message)
 }
 
-// Issues provides a issues store
+// Issues provides a issues store.
 type Issues interface {
 	GetByID(ctx context.Context, id, projectId, customerId string) (*api.Issue, error)
 	Create(ctx context.Context, newProj *api.NewIssue, projectId, customerId, reporter string) (*api.Issue, error)
@@ -37,7 +37,7 @@ type IssueListOptions struct {
 	*LimitOffset
 }
 
-// NewIssueListOptions create a new opts
+// NewIssueListOptions create a new opts.
 func NewIssueListOptions(query string, offset int, limit int) *IssueListOptions {
 	return &IssueListOptions{
 		SubjectLikeOptions: &SubjectLikeOptions{query},
@@ -45,13 +45,13 @@ func NewIssueListOptions(query string, offset int, limit int) *IssueListOptions 
 	}
 }
 
-// SubjectLikeOptions used to query by subject using like
+// SubjectLikeOptions used to query by subject using like.
 type SubjectLikeOptions struct {
 	// Query specifies a search query for organizations.
 	Query string
 }
 
-// ListSubjectLikeSQL used to search by subject if query is set
+// ListSubjectLikeSQL used to search by subject if query is set.
 func ListSubjectLikeSQL(opt *SubjectLikeOptions) (conds []*sqlf.Query) {
 	conds = []*sqlf.Query{sqlf.Sprintf("TRUE")}
 	if opt.Query != "" {
@@ -61,18 +61,18 @@ func ListSubjectLikeSQL(opt *SubjectLikeOptions) (conds []*sqlf.Query) {
 	return conds
 }
 
-// IssuesPG provides a issues store for postgresql
+// IssuesPG provides a issues store for postgresql.
 type IssuesPG struct {
 	dbconn *sql.DB
 	cfg    *conf.Config
 }
 
-// NewIssues new issues store
+// NewIssues new issues store.
 func NewIssues(dbconn *sql.DB, cfg *conf.Config) Issues {
 	return &IssuesPG{dbconn: dbconn, cfg: cfg}
 }
 
-// GetByID get issue by id
+// GetByID get issue by id.
 func (is *IssuesPG) GetByID(ctx context.Context, id, projectId, customerId string) (*api.Issue, error) {
 	issues, err := is.getBySQL(ctx, "WHERE id=$1 AND project_id=$2 AND customer_id=$3 LIMIT 1", id, projectId, customerId)
 	if err != nil {
@@ -86,7 +86,7 @@ func (is *IssuesPG) GetByID(ctx context.Context, id, projectId, customerId strin
 	return &issues[0], nil
 }
 
-// Create create new issue
+// Create create new issue.
 func (is *IssuesPG) Create(ctx context.Context, newIssue *api.NewIssue, projectId, customerId, reporter string) (*api.Issue, error) {
 	issue := api.Issue{}
 
@@ -106,7 +106,6 @@ func (is *IssuesPG) Create(ctx context.Context, newIssue *api.NewIssue, projectI
 }
 
 func (is *IssuesPG) Update(ctx context.Context, updatedIssue *api.UpdatedIssue, id, projectId, customerId string) (*api.Issue, error) {
-
 	fields := []*sqlf.Query{sqlf.Sprintf("subject=%s, content=%s, severity=%s, category=%s, labels=%s, updated_at=%s", updatedIssue.Subject, updatedIssue.Content, updatedIssue.Severity, updatedIssue.Category, pq.Array(updatedIssue.Labels), time.Now())}
 
 	qry := sqlf.Sprintf("UPDATE issues SET %s WHERE id=%s AND customer_id=%s", sqlf.Join(fields, ","), id, customerId)
@@ -118,7 +117,7 @@ func (is *IssuesPG) Update(ctx context.Context, updatedIssue *api.UpdatedIssue, 
 	return is.GetByID(ctx, id, projectId, customerId)
 }
 
-// List list issues
+// List list issues.
 func (is *IssuesPG) List(ctx context.Context, opt *IssueListOptions, projectId, customerId string) ([]api.Issue, error) {
 	if opt == nil {
 		opt = &IssueListOptions{}

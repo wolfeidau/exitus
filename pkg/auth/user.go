@@ -8,33 +8,32 @@ import (
 )
 
 const (
-	// UserKey the key used in the context for the user
+	// UserKey the key used in the context for the user.
 	UserKey = "Auth.User"
 )
 
 var (
-	// ErrUserNotFound user not found in context
+	// ErrUserNotFound user not found in context.
 	ErrUserNotFound = errors.New("user not found in context")
 
-	// ErrUserTypeMismatch failed to retrieve user, type mismatch
+	// ErrUserTypeMismatch failed to retrieve user, type mismatch.
 	ErrUserTypeMismatch = errors.New("failed to retrieve user, type mismatch")
 )
 
-// AuthenticatedUser authenticated user used to validate access
+// AuthenticatedUser authenticated user used to validate access.
 type AuthenticatedUser struct {
 	ID     string   `json:"id,omitempty"`
 	Scopes []string `json:"scopes,omitempty"`
 }
 
-// MarshalZerologObject used to print user in logs
+// MarshalZerologObject used to print user in logs.
 func (au *AuthenticatedUser) MarshalZerologObject(e *zerolog.Event) {
 	e.Str("id", au.ID).Strs("scopes", au.Scopes)
 }
 
 // HasScope check if the authenticated user has one of the allowed
-// scopes
+// scopes.
 func (au *AuthenticatedUser) HasScope(allowedScopes []string) bool {
-
 	if len(allowedScopes) == 0 {
 		return false
 	}
@@ -51,9 +50,8 @@ func (au *AuthenticatedUser) HasScope(allowedScopes []string) bool {
 	return false
 }
 
-// LoadUserFromContext load the authenticated user from the context
+// LoadUserFromContext load the authenticated user from the context.
 func LoadUserFromContext(ctx echo.Context) (AuthenticatedUser, error) {
-
 	var (
 		user AuthenticatedUser
 		ok   bool

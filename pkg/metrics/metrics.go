@@ -9,15 +9,15 @@ import (
 	"github.com/wolfeidau/exitus/pkg/conf"
 )
 
-// LogWriter write metrics to the logger
+// LogWriter write metrics to the logger.
 type LogWriter struct{}
 
-// New create a new log writer for metrics
+// New create a new log writer for metrics.
 func New(cfg *conf.Config) *LogWriter {
 	return &LogWriter{}
 }
 
-// Start start the writer
+// Start start the writer.
 func (mr *LogWriter) Start() {
 	metrics.WriteJSON(metrics.DefaultRegistry, 30*time.Second, mr)
 }
@@ -27,17 +27,17 @@ func (mr *LogWriter) Write(data []byte) (int, error) {
 	return 0, nil
 }
 
-// DBMonitor monitor a db pool
+// DBMonitor monitor a db pool.
 type DBMonitor struct {
 	db *sql.DB
 }
 
-// NewDBMonitor create a new db pool monitor
+// NewDBMonitor create a new db pool monitor.
 func NewDBMonitor(db *sql.DB) *DBMonitor {
 	return &DBMonitor{db: db}
 }
 
-// Start start the collector
+// Start start the collector.
 func (dbm *DBMonitor) Start() {
 	s := dbm.db.Stats()
 	ig := metrics.GetOrRegisterGauge("db.conn.idle", nil)

@@ -12,7 +12,7 @@ import (
 	"github.com/wolfeidau/exitus/migrations"
 )
 
-// NewMigrate load migrations
+// NewMigrate load migrations.
 func NewMigrate(db *sql.DB) *migrate.Migrate {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
@@ -35,7 +35,7 @@ func NewMigrate(db *sql.DB) *migrate.Migrate {
 	return m
 }
 
-// DoMigrate do sql migrations
+// DoMigrate do sql migrations.
 func DoMigrate(m *migrate.Migrate) (err error) {
 	err = m.Up()
 	if err == nil || err == migrate.ErrNoChange {

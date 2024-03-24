@@ -48,7 +48,3 @@ local: generate
 watchexec:
 	watchexec --restart --exts "go" --watch . "docker-compose restart backend"
 .PHONY: watchexec
-
-cdk-deploy: docker-build
-	@echo "--- deploy all the things"
-	$(shell cd infra && npm run cdk deploy -- --require-approval '*')

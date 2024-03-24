@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-
 	// loads configuration from env and configures logger
 	cfg, err := conf.NewDefaultConfig()
 	if err != nil {

@@ -14,11 +14,9 @@ import (
 	jose "gopkg.in/square/go-jose.v2"
 )
 
-var (
-	supportedSigAlgs = []string{"RS256"}
-)
+var supportedSigAlgs = []string{"RS256"}
 
-// Validate returns validates the token, then returns just the parsed JSON from the JWT
+// Validate returns validates the token, then returns just the parsed JSON from the JWT.
 func Validate(ctx context.Context, providerURL, token string) (*JwtPayload, error) {
 	// triggers a web request
 	provider, err := oidc.NewProvider(ctx, providerURL)

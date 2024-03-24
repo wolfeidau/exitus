@@ -16,7 +16,6 @@ var (
 )
 
 func TestContext(t testing.TB) context.Context {
-
 	connectOnce.Do(func() {
 		// loads configuration from env and configures logger
 		cfg, err := conf.NewDefaultConfig()
@@ -28,7 +27,6 @@ func TestContext(t testing.TB) context.Context {
 		if err != nil {
 			t.Fatal("failed to load config")
 		}
-
 	})
 
 	emptyDBPreserveSchema(t, Global)

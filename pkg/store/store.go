@@ -7,7 +7,7 @@ import (
 	"github.com/wolfeidau/exitus/pkg/conf"
 )
 
-// Stores one stop for stores
+// Stores one stop for stores.
 type Stores struct {
 	Projects  Projects
 	Customers Customers
@@ -15,7 +15,7 @@ type Stores struct {
 	Comments  Comments
 }
 
-// New create all the stores
+// New create all the stores.
 func New(dbconn *sql.DB, cfg *conf.Config) (*Stores, error) {
 	return &Stores{
 		Projects:  NewProjects(dbconn, cfg),
@@ -40,13 +40,13 @@ func (o *LimitOffset) SQL() *sqlf.Query {
 	return sqlf.Sprintf("LIMIT %d OFFSET %d", o.Limit, o.Offset)
 }
 
-// NameLikeOptions used to query by name using like
+// NameLikeOptions used to query by name using like.
 type NameLikeOptions struct {
 	// Query specifies a search query for organizations.
 	Query string
 }
 
-// ListNameLikeSQL used to search by name if query is set
+// ListNameLikeSQL used to search by name if query is set.
 func ListNameLikeSQL(opt *NameLikeOptions) (conds []*sqlf.Query) {
 	conds = []*sqlf.Query{sqlf.Sprintf("TRUE")}
 	if opt.Query != "" {

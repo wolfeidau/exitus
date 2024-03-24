@@ -12,7 +12,6 @@ var env = expvar.NewMap("env")
 
 // Get returns the value of the given environment variable.
 func Get(name string, defaultValue string) string {
-
 	value, ok := os.LookupEnv(name)
 	if !ok {
 		value = defaultValue
